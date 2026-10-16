@@ -7,11 +7,27 @@
    when someone drives the other way. Leg names must use the form "X to Y". */
 
 window.HKR_PLACES = {
-  joburg:      ["johannesburg", "joburg", "jozi", "jhb", "johannesburg cbd", "joburg cbd", "sandton", "randburg", "rosebank", "midrand", "or tambo", "or tambo airport", "roodepoort", "soweto", "germiston", "alberton"],
-  pretoria:    ["pretoria", "tshwane", "pta", "centurion", "pretoria cbd", "menlyn", "hatfield"],
-  durban:      ["durban", "dbn", "ethekwini", "umhlanga", "pinetown", "westville", "durban cbd"],
-  capetown:    ["cape town", "ct", "kaapstad", "cape town cbd", "city bowl", "sea point", "green point", "camps bay", "tamboerskloof", "gardens", "cape town city"],
+  joburg:      ["johannesburg", "joburg", "jozi", "jhb", "egoli", "randburg", "midrand", "or tambo", "or tambo airport", "northcliff", "melville", "parktown"],
+  jhbcbd:      ["johannesburg cbd", "joburg cbd", "jhb cbd", "johannesburg city", "braamfontein", "marshalltown", "newtown", "maboneng"],
+  sandton:     ["sandton", "rosebank", "sandton city", "bryanston", "morningside", "sunninghill", "woodmead", "illovo"],
+  soweto:      ["soweto", "orlando", "diepkloof", "meadowlands", "dobsonville", "protea glen", "jabulani", "pimville", "naledi", "zola"],
+  eastrand:    ["east rand", "ekurhuleni", "boksburg", "benoni", "kempton park", "germiston", "edenvale", "alberton", "brakpan", "springs", "bedfordview", "tembisa"],
+  westrand:    ["west rand", "roodepoort", "krugersdorp", "mogale city", "florida", "randfontein", "honeydew", "constantia kloof", "weltevreden park"],
+  pretoria:    ["pretoria", "tshwane", "pta", "menlyn", "hatfield", "brooklyn", "lynnwood", "pretoria east"],
+  centurion:   ["centurion", "irene", "midstream", "lyttelton", "highveld", "eldoraigne", "olievenhoutbosch"],
+  ptacbd:      ["pretoria cbd", "pretoria central", "pretoria city", "arcadia", "sunnyside", "union buildings", "salvokop"],
+  durban:      ["durban", "dbn", "ethekwini"],
+  dbncbd:      ["durban cbd", "durban central", "durban city", "durban city centre", "berea", "morningside durban", "glenwood", "point waterfront"],
+  umhlanga:    ["umhlanga", "umhlanga rocks", "umhlanga ridge", "la lucia", "gateway", "mount edgecombe", "durban north", "sibaya"],
+  pinetown:    ["pinetown", "westville", "new germany", "kloof", "hillcrest", "gillitts", "queensburgh", "cowies hill"],
+  umlazi:      ["umlazi", "isipingo", "lamontville", "prospecton", "chatsworth"],
+  pmb:         ["pietermaritzburg", "pmb", "maritzburg", "msunduzi", "hilton", "howick", "camperdown", "cato ridge"],
+  capetown:    ["cape town", "ct", "kaapstad", "cape town cbd", "cape town city centre", "city bowl", "sea point", "green point", "camps bay", "tamboerskloof", "gardens", "cape town city", "foreshore", "woodstock", "v&a waterfront", "waterfront"],
   ctairport:   ["cape town airport", "cape town international", "cape town international airport", "cpt", "ct airport"],
+  bellville:   ["bellville", "durbanville", "brackenfell", "kuils river", "parow", "goodwood", "tyger valley", "northern suburbs", "kraaifontein", "edgemead", "plattekloof"],
+  southern:    ["southern suburbs", "claremont", "rondebosch", "newlands", "wynberg", "constantia", "tokai", "kenilworth", "bergvliet", "plumstead", "observatory", "muizenberg", "retreat"],
+  khayelitsha: ["khayelitsha", "mitchells plain", "mitchell's plain", "philippi", "gugulethu", "nyanga", "blue downs", "delft"],
+  tableview:   ["table view", "blouberg", "bloubergstrand", "milnerton", "parklands", "sunningdale", "big bay", "melkbosstrand", "west beach"],
   bloem:       ["bloemfontein", "bloem", "mangaung"],
   polokwane:   ["polokwane", "pietersburg", "mokopane"],
   kruger:      ["kruger", "kruger park", "kruger national park", "malelane", "malalane", "mbombela", "nelspruit", "komatipoort", "hazyview", "white river", "skukuza", "marloth park", "crocodile bridge"],
@@ -20,12 +36,33 @@ window.HKR_PLACES = {
   gqeberha:    ["gqeberha", "port elizabeth", "pe", "nelson mandela bay", "kariega", "uitenhage"],
   drakensberg: ["drakensberg", "berg", "champagne valley", "winterton", "bergville", "central berg", "cathedral peak", "royal natal", "underberg"],
   ballito:     ["ballito", "salt rock", "umhlali", "north coast", "kwadukuza", "stanger", "zimbali", "king shaka airport", "king shaka"],
-  southcoast:  ["margate", "south coast", "port shepstone", "shelly beach", "scottburgh", "uvongo", "ramsgate", "southbroom", "hibberdene", "umkomaas"],
+  southcoast:  ["margate", "south coast", "port shepstone", "shelly beach", "scottburgh", "uvongo", "ramsgate", "southbroom", "hibberdene", "umkomaas", "amanzimtoti"],
   eastlondon:  ["east london", "el", "buffalo city", "gonubie"],
   gardenroute: ["garden route", "knysna", "george", "wilderness", "plettenberg bay", "plett", "mossel bay", "sedgefield"],
   hermanus:    ["hermanus", "overberg", "kleinmond", "stanford", "gansbaai"],
   stellenbosch:["stellenbosch", "stellies", "winelands", "somerset west"],
   langebaan:   ["langebaan", "west coast", "west coast national park", "saldanha", "paternoster", "velddrif", "yzerfontein", "jacobsbaai"]
+};
+
+/* Suburbs and areas inside a bigger city. A trip from a suburb uses the city's guide
+   when there's no guide for the suburb itself (e.g. Soweto to Durban uses Johannesburg to Durban). */
+window.HKR_PLACE_PARENT = {
+  jhbcbd: "joburg", sandton: "joburg", soweto: "joburg", eastrand: "joburg", westrand: "joburg",
+  centurion: "pretoria", ptacbd: "pretoria",
+  dbncbd: "durban", umhlanga: "durban", pinetown: "durban", umlazi: "durban",
+  bellville: "capetown", southern: "capetown", khayelitsha: "capetown", tableview: "capetown"
+};
+
+/* How each place is shown in the typing suggestions. */
+window.HKR_PLACE_LABELS = {
+  joburg: "Johannesburg", jhbcbd: "Johannesburg CBD", sandton: "Sandton", soweto: "Soweto", eastrand: "East Rand", westrand: "West Rand",
+  pretoria: "Pretoria", centurion: "Centurion", ptacbd: "Pretoria CBD",
+  durban: "Durban", dbncbd: "Durban CBD", umhlanga: "Umhlanga", pinetown: "Pinetown", umlazi: "Umlazi", pmb: "Pietermaritzburg",
+  capetown: "Cape Town", ctairport: "Cape Town Airport", bellville: "Bellville", southern: "Southern Suburbs",
+  khayelitsha: "Khayelitsha & Mitchells Plain", tableview: "Table View",
+  bloem: "Bloemfontein", polokwane: "Polokwane", kruger: "Kruger Park (Malelane)", panorama: "Dullstroom & Graskop", suncity: "Sun City",
+  gqeberha: "Gqeberha (Port Elizabeth)", drakensberg: "Drakensberg", ballito: "Ballito", southcoast: "South Coast (Margate)",
+  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", langebaan: "Langebaan (West Coast)"
 };
 
 window.HKR_ROUTES = [
@@ -549,6 +586,281 @@ window.HKR_ROUTES = [
       { kind: "weather", title: "Strong crosswinds", detail: "The southeaster blows hard across the R27 in summer, with blowing sand. Hold the wheel firmly, especially towing." },
       { kind: "hazard", title: "Long straights", detail: "Easy to speed and to doze. Keep an eye on your speed and take a break if needed." },
       { kind: "safety", title: "Tortoises and buck", detail: "Wildlife crosses the road, especially in the national park. Stick to the park's speed limits." }
+    ]}
+  ]
+},
+/* ---------- Commuter guides: Gauteng ---------- */
+/* 21 */ {
+  id: "soweto-joburg", a: ["soweto"], b: ["jhbcbd", "sandton", "joburg"], commute: true,
+  title: "Soweto to Joburg CBD and Sandton", route: "Soweto Highway (M70) to the CBD, or the N1 Western Bypass to Sandton", distanceKm: 25, driveTime: "30–60 minutes at peak",
+  roads: ["M70", "N1", "N12", "M1", "M7"], places: ["Soweto", "Orlando", "Diepkloof", "Nasrec", "Booysens", "Braamfontein", "Western Bypass", "Malibongwe", "William Nicol", "Rivonia"],
+  summary: "Two different commutes: the Soweto Highway straight into town for the CBD, or the N1 Western Bypass north for Sandton and the northern suburbs.",
+  before: [
+    "Leave before 6:00 to beat the worst of the morning queues.",
+    "Check for crashes on the N1 Western Bypass before you choose your route.",
+    "No tolls on this route since e-tolls ended in April 2024.",
+    "Rea Vaya buses run along the Soweto Highway if you'd rather not drive."
+  ],
+  legs: [
+    { name: "Soweto to Joburg CBD", items: [
+      { kind: "lane", title: "Rea Vaya bus lanes", detail: "The Soweto Highway has bus-only lanes in both directions. Stay out of them; they're enforced." },
+      { kind: "hazard", title: "Taxis stopping suddenly", detail: "Minibus taxis pull in and out without warning near stops and intersections. Keep a gap and watch the car two ahead." },
+      { kind: "tip", title: "FNB Stadium events", detail: "Big matches and concerts at Nasrec back up the Soweto Highway for hours. Check the events calendar." },
+      { kind: "lane", title: "Into the city", detail: "The Soweto Highway leads to Booysens, just south of the CBD. Plan which street you'll take into town before you get there." }
+    ]},
+    { name: "Soweto to Sandton", items: [
+      { kind: "lane", title: "N1 Western Bypass northbound", detail: "Join the N1 north and stay in the middle lanes; the left lane slows at every on-ramp." },
+      { kind: "hazard", title: "Heavy morning queues", detail: "The bypass is often stop-start from Roodepoort past Randburg on weekday mornings. Allow extra time." },
+      { kind: "lane", title: "Sandton exits", detail: "William Nicol and Rivonia exits serve Sandton. Move left early; late lane changes cause many crashes here." },
+      { kind: "safety", title: "Robots out on off-ramps", detail: "During power cuts, treat dead traffic lights as a four-way stop and watch for cars that don't." }
+    ]}
+  ]
+},
+/* 22 */ {
+  id: "eastrand-joburg", a: ["eastrand"], b: ["jhbcbd", "sandton", "joburg"], commute: true,
+  title: "East Rand to Johannesburg", route: "N12 and R24 to the George Bizos (Gillooly's) interchange, then the N3 or M2", distanceKm: 25, driveTime: "35–75 minutes at peak",
+  roads: ["N12", "R24", "N3", "R21", "M2"], places: ["Boksburg", "Benoni", "Kempton Park", "Edenvale", "Bedfordview", "Germiston", "Gillooly's", "George Bizos", "Geldenhuys", "Elands", "Eastgate"],
+  summary: "Most East Rand commuters funnel through the George Bizos (Gillooly's) interchange in Bedfordview, one of the busiest interchanges in the country.",
+  before: [
+    "No tolls on these roads since e-tolls ended in April 2024.",
+    "Check for crashes at Gillooly's before you leave; one incident backs up every approach.",
+    "For Sandton, consider the N3 north; for the CBD, the R24 into town or the M2.",
+    "The Gautrain from Rhodesfield or Marlboro can beat peak traffic to Sandton."
+  ],
+  legs: [
+    { name: "East Rand to Bedfordview", items: [
+      { kind: "hazard", title: "N12 through Boksburg and Germiston", detail: "Heavy traffic and many trucks. Keep a safe gap; rear-end crashes are common at peak." },
+      { kind: "lane", title: "R24 airport freeway", detail: "From Kempton Park and OR Tambo, the R24 runs west through Edenvale. Watch for airport traffic merging and drivers looking for exits." },
+      { kind: "safety", title: "Smash-and-grab at robots", detail: "Keep bags and phones out of sight at intersections and off-ramps." }
+    ]},
+    { name: "Bedfordview to Johannesburg", items: [
+      { kind: "hazard", title: "George Bizos (Gillooly's) interchange", detail: "Where the N12, R24 and N3 meet. Lanes split and merge quickly. Know your lane before you reach it." },
+      { kind: "lane", title: "Into the CBD on the R24", detail: "Past Eastgate the R24 stops being a freeway and becomes city streets with robots through Bruma and Kensington." },
+      { kind: "lane", title: "N3 north for Sandton", detail: "Take the N3 Eastern Bypass north towards Buccleuch for Sandton and Woodmead. Expect queues near Linksfield." },
+      { kind: "tip", title: "M2 via Geldenhuys", detail: "The Geldenhuys interchange connects to the M2 for Germiston and the south of the CBD." }
+    ]}
+  ]
+},
+/* 23 */ {
+  id: "westrand-sandton", a: ["westrand"], b: ["sandton", "joburg"], commute: true,
+  title: "West Rand to Sandton", route: "N1 Western Bypass, or Beyers Naude Drive and Malibongwe", distanceKm: 30, driveTime: "40–75 minutes at peak",
+  roads: ["N1", "N14", "M5", "R512", "M47"], places: ["Roodepoort", "Krugersdorp", "Florida", "Constantia Kloof", "Beyers Naude", "Malibongwe", "William Nicol", "Rivonia", "Muldersdrift", "Western Bypass"],
+  summary: "The N1 Western Bypass is the main route, but it's one of Joburg's slowest stretches at peak. Beyers Naude Drive is the usual alternative.",
+  before: [
+    "No tolls on this route since e-tolls ended in April 2024.",
+    "Check the N1 Western Bypass for crashes before you choose a route.",
+    "Leave before 6:15 or after 8:45 to miss the worst queues."
+  ],
+  legs: [
+    { name: "West Rand to the N1", items: [
+      { kind: "lane", title: "Joining from Roodepoort", detail: "Most Roodepoort commuters join the N1 at Christiaan de Wet or 14th Avenue. Expect on-ramp queues from about 6:30." },
+      { kind: "tip", title: "From Krugersdorp", detail: "The N14 towards Muldersdrift links to Beyers Naude Drive (M5) towards Randburg, avoiding part of the bypass." },
+      { kind: "safety", title: "Robots out", detail: "During power cuts, treat dead traffic lights as a four-way stop, especially on Hendrik Potgieter and Christiaan de Wet." }
+    ]},
+    { name: "The N1 to Sandton", items: [
+      { kind: "hazard", title: "Western Bypass crawl", detail: "Often stop-start from Beyers Naude to William Nicol at peak. Keep a safe gap; rear-end crashes are common." },
+      { kind: "lane", title: "Malibongwe and William Nicol exits", detail: "William Nicol leads to Sandton via Bryanston. Get into the left lanes early." },
+      { kind: "tip", title: "Rivonia exit", detail: "Rivonia Road takes you to Sandton CBD and Sunninghill. Queues on the off-ramp can reach the highway." }
+    ]}
+  ]
+},
+/* 24 */ {
+  id: "centurion-ptacbd", a: ["centurion"], b: ["ptacbd", "pretoria"], commute: true,
+  title: "Centurion to Pretoria CBD", route: "N14 Ben Schoeman into Salvokop, or the R21 to the Fountains circle", distanceKm: 15, driveTime: "20–45 minutes at peak",
+  roads: ["N14", "R21", "N1", "M18", "R101"], places: ["Centurion", "Brakfontein", "Lyttelton", "Fountains", "Salvokop", "Irene", "Groenkloof", "Monument Park"],
+  summary: "A short commute where both main routes narrow into city streets near Fountains, so that's where queues build.",
+  before: [
+    "No tolls on these roads since e-tolls ended in April 2024.",
+    "The Gautrain from Centurion to Pretoria station takes about 10 minutes and avoids the queue.",
+    "Avoid 6:45–8:15 inbound if you can."
+  ],
+  legs: [
+    { name: "Centurion to Pretoria CBD", items: [
+      { kind: "lane", title: "N14 Ben Schoeman northbound", detail: "From Brakfontein the N14 runs past Lyttelton and Groenkloof and ends in Salvokop, just south of the CBD." },
+      { kind: "tip", title: "R21 alternative", detail: "From Irene and the east, the R21 runs past Monument Park to the Fountains circle, where it becomes Nelson Mandela Drive." },
+      { kind: "hazard", title: "Fountains bottleneck", detail: "Both routes meet city traffic near Fountains. Expect queues at peak and taxis changing lanes." },
+      { kind: "safety", title: "Robots out in town", detail: "CBD intersections jam badly during power cuts. Treat dead traffic lights as a four-way stop." }
+    ]}
+  ]
+},
+/* ---------- Commuter guides: Durban ---------- */
+/* 25 */ {
+  id: "umlazi-dbncbd", a: ["umlazi"], b: ["dbncbd", "durban"], commute: true,
+  title: "Umlazi to Durban CBD", route: "N2 to the Reunion interchange, then the M4 (Inkosi Albert Luthuli Highway)", distanceKm: 20, driveTime: "25–50 minutes at peak",
+  roads: ["M4", "N2", "R102", "M35"], places: ["Umlazi", "Isipingo", "Reunion", "Prospecton", "Mobeni", "Southern Freeway", "Albert Luthuli Highway"],
+  summary: "The M4 is the direct route into the CBD from the south; the N2 bypasses the city as the Outer Ring Road.",
+  before: [
+    "No tolls on this route.",
+    "Leave before 6:15 to beat the main inbound rush.",
+    "Check for N2 closures near Isipingo and Prospecton after heavy rain."
+  ],
+  legs: [
+    { name: "Umlazi to Durban CBD", items: [
+      { kind: "lane", title: "Reunion interchange", detail: "Where the N2 meets the M4 next to the old airport. Follow M4 signs for the city; the N2 swings inland as the Outer Ring Road." },
+      { kind: "hazard", title: "Port trucks", detail: "The M4 runs alongside the port and industrial areas. Expect heavy trucks merging and slow lanes." },
+      { kind: "hazard", title: "Taxis on the R102", detail: "The R102 through Isipingo is busy with taxis and pedestrians. Slow down near ranks." },
+      { kind: "weather", title: "Flooding after heavy rain", detail: "Low-lying roads near Isipingo and Prospecton flood quickly in storms. Don't drive through water you can't see the bottom of." }
+    ]}
+  ]
+},
+/* 26 */ {
+  id: "pinetown-dbncbd", a: ["pinetown"], b: ["dbncbd", "durban"], commute: true,
+  title: "Pinetown to Durban CBD", route: "N3 via the EB Cloete interchange, or the M13 through Westville", distanceKm: 17, driveTime: "25–50 minutes at peak",
+  roads: ["N3", "M13", "N2", "M10"], places: ["Pinetown", "Westville", "Cowies Hill", "Paradise Valley", "EB Cloete", "Spaghetti Junction", "Fields Hill", "Mayville", "Sherwood", "45th Cutting"],
+  summary: "Two parallel routes: the N3 through the EB Cloete interchange, or the M13 through Westville, which many commuters use to avoid the N3 queues.",
+  before: [
+    "No tolls between Pinetown and the CBD; the Mariannhill Toll Plaza is west of Pinetown.",
+    "Check for crashes at the EB Cloete interchange before choosing the N3 or M13.",
+    "Expect roadworks around EB Cloete during its upgrade."
+  ],
+  legs: [
+    { name: "Pinetown to Westville", items: [
+      { kind: "hazard", title: "Fields Hill (M13)", detail: "Steep hill between Kloof and Pinetown, known for serious truck crashes. Slow down and keep well back from heavy vehicles." },
+      { kind: "lane", title: "M13 or N3?", detail: "The M13 (King Cetshwayo Highway) runs parallel to the N3 through Westville and is often quicker when the N3 is jammed." }
+    ]},
+    { name: "Westville to Durban CBD", items: [
+      { kind: "hazard", title: "EB Cloete interchange", detail: "The four-level 'Spaghetti Junction' where the N2 and N3 meet. Very heavy traffic and quick lane splits; know your lane early." },
+      { kind: "roadworks", title: "Interchange upgrade", detail: "SANRAL is upgrading EB Cloete. Lane layouts and speed limits change; follow the temporary signs." },
+      { kind: "lane", title: "Into town", detail: "The M13 becomes King Dinuzulu Road near the city; the N3 ends in the CBD. Expect robots and taxis once you're off the freeway." }
+    ]}
+  ]
+},
+/* 27 */ {
+  id: "umhlanga-dbncbd", a: ["umhlanga"], b: ["dbncbd", "durban"], commute: true,
+  title: "Umhlanga to Durban CBD", route: "M4 (Ruth First Highway) along the coast, or the N2", distanceKm: 18, driveTime: "20–45 minutes at peak",
+  roads: ["M4", "N2", "M41", "M12", "M17"], places: ["Umhlanga", "La Lucia", "Gateway", "Umhlanga Ridge", "Durban North", "Virginia", "Moses Mabhida", "Ruth First Highway", "Leo Boyd Highway"],
+  summary: "The M4 coastal road is the most direct; the N2 can be quicker from Umhlanga Ridge and Gateway, but both queue at peak.",
+  before: [
+    "No tolls on this route.",
+    "Umhlanga Rocks Drive and Gateway traffic build early; leave before 6:30 if you can.",
+    "Big events at Moses Mabhida Stadium slow the M4 near the stadium."
+  ],
+  legs: [
+    { name: "Umhlanga to Durban CBD", items: [
+      { kind: "hazard", title: "Umhlanga Ridge and Gateway", detail: "Very busy around the M41 and Umhlanga Rocks Drive at peak. Allow extra time just to reach the highway." },
+      { kind: "tip", title: "M4 coastal route", detail: "The M4 runs past La Lucia and Virginia Airport, then becomes the Ruth First Highway past Moses Mabhida Stadium into town." },
+      { kind: "lane", title: "N2 alternative", detail: "From Umhlanga Ridge, the N2 south can be quicker, but it joins heavy traffic heading for the EB Cloete interchange." },
+      { kind: "safety", title: "Robots in the CBD", detail: "Once off the M4 you're on one-way city streets. Watch for taxis and pedestrians, and keep valuables out of sight." }
+    ]}
+  ]
+},
+/* 28 */ {
+  id: "pmb-durban", a: ["pmb"], b: ["durban", "dbncbd", "pinetown"], commute: true,
+  title: "Pietermaritzburg to Durban", route: "N3 via Cato Ridge, Hammarsdale and Pinetown", distanceKm: 80, driveTime: "1–1½ hours",
+  roads: ["N3", "M13"], places: ["Pietermaritzburg", "Camperdown", "Cato Ridge", "Hammarsdale", "Key Ridge", "Harrison Flats", "Mariannhill", "Pinetown", "EB Cloete"],
+  summary: "A fast but heavy commute on the busiest truck route in the country, with one toll plaza and a bottleneck at the Durban end.",
+  before: [
+    "Have a card or cash for the Mariannhill Toll Plaza, or ask the N3 Toll Concession about frequent-user discounts.",
+    "Save the N3 Helpline: 0800 63 43 57.",
+    "Leave before 5:45 to beat the Pinetown and EB Cloete queues.",
+    "Check @N3Route on X for crashes before you set off."
+  ],
+  legs: [
+    { name: "Pietermaritzburg to Cato Ridge", items: [
+      { kind: "hazard", title: "Heavy trucks", detail: "The N3 is the main freight route to the port. Expect slow trucks on every climb; overtake only in the right lane." },
+      { kind: "weather", title: "Early-morning mist", detail: "Mist settles in the valleys around Camperdown and Cato Ridge. Lights on, speed down, bigger gap." }
+    ]},
+    { name: "Cato Ridge to Pinetown", items: [
+      { kind: "hazard", title: "Long descents", detail: "Steep downhill sections towards Hammarsdale and Harrison Flats. Trucks brake hard; leave plenty of room." },
+      { kind: "toll", title: "Mariannhill Toll Plaza", detail: "Mainline plaza near Pinetown. Many commuters use the M13 from Key Ridge to avoid it, but Fields Hill is steep." },
+      { kind: "tip", title: "M13 split at Key Ridge", detail: "The M13 leaves the N3 near Assagay and runs through Hillcrest and Kloof. It avoids the toll but goes down Fields Hill." }
+    ]},
+    { name: "Pinetown to Durban", items: [
+      { kind: "hazard", title: "EB Cloete interchange", detail: "Where the N2 and N3 meet in Westville. Heavy, slow traffic at peak and roadworks during the upgrade." },
+      { kind: "lane", title: "Durban end", detail: "Know whether you need the N2 north, the N2 south or the N3 into town before you reach EB Cloete." }
+    ]}
+  ]
+},
+/* ---------- Commuter guides: Cape Town ---------- */
+/* 29 */ {
+  id: "bellville-capetown", a: ["bellville"], b: ["capetown"], commute: true,
+  title: "Bellville to Cape Town City Centre", route: "N1 inbound via Plattekloof and Koeberg", distanceKm: 20, driveTime: "25–60 minutes at peak",
+  roads: ["N1", "M5", "R27", "R102", "N7"], places: ["Bellville", "Tyger Valley", "Durban Road", "Plattekloof", "Monte Vista", "Goodwood", "Koeberg", "Paarden Eiland", "Foreshore", "Voortrekker Road"],
+  summary: "The N1 is the main route in from the northern suburbs, and inbound jams of up to 12 km are common on weekday mornings.",
+  before: [
+    "No tolls on this route.",
+    "Leave before 6:15 or after 8:45 to miss the worst inbound queue.",
+    "Voortrekker Road (R102) runs parallel but has many robots."
+  ],
+  legs: [
+    { name: "Bellville to Koeberg", items: [
+      { kind: "hazard", title: "Morning queue from Durban Road", detail: "Inbound traffic is often stop-start from Durban Road past Plattekloof. Keep a safe gap; rear-end crashes are common." },
+      { kind: "lane", title: "N7 and Plattekloof merges", detail: "Traffic joins from the N7 and Plattekloof Road. Stay out of the far-left lane through these merges." },
+      { kind: "tip", title: "Koeberg interchange", detail: "The M5 and R27 connect here. Stay on the N1 for the city centre." }
+    ]},
+    { name: "Koeberg to Cape Town City Centre", items: [
+      { kind: "lane", title: "City exits", detail: "Lower Church Street and Christiaan Barnard Street serve the Foreshore and CTICC; the N1 ends at Buitengracht near the Waterfront." },
+      { kind: "tip", title: "Afternoon reverse", detail: "Outbound traffic jams in the afternoon from about 15:30. Leaving town after 18:00 is usually much quicker." }
+    ]}
+  ]
+},
+/* 30 */ {
+  id: "southern-capetown", a: ["southern"], b: ["capetown"], commute: true,
+  title: "Southern Suburbs to Cape Town City Centre", route: "M3 (Blue Route, Edinburgh Drive and Philip Kgosana Drive)", distanceKm: 18, driveTime: "20–50 minutes at peak",
+  roads: ["M3", "N2", "M4", "M5"], places: ["Tokai", "Bergvliet", "Constantia", "Wynberg", "Bishopscourt", "Newlands", "Edinburgh Drive", "Paradise Road", "Rondebosch", "Hospital Bend", "Philip Kgosana Drive", "De Waal Drive"],
+  summary: "The M3 is the main route from Tokai and Constantia into town, but the traffic lights through Bishopscourt and Newlands slow everything at peak.",
+  before: [
+    "No tolls on this route.",
+    "Leave before 6:30 to beat the queue at the Newlands robots.",
+    "Expect roadworks between Newlands and Wynberg during the City's M3 congestion project."
+  ],
+  legs: [
+    { name: "Tokai to Newlands", items: [
+      { kind: "hazard", title: "Blue Route peak traffic", detail: "Heavy inbound traffic from Tokai and Bergvliet from about 6:30. Keep a safe gap." },
+      { kind: "hazard", title: "Robots through Bishopscourt and Newlands", detail: "The M3 stops being a freeway here, with several traffic lights on Edinburgh Drive and Union Avenue. Queues build at each one." },
+      { kind: "roadworks", title: "M3 congestion project", detail: "The City plans changes to the intersections between Newlands and Wynberg from late 2026. Follow temporary signs." }
+    ]},
+    { name: "Newlands to Cape Town City Centre", items: [
+      { kind: "lane", title: "Hospital Bend", detail: "The M3 and N2 share the road past Groote Schuur. Know whether you need the N2 or the M3 into town before you get there." },
+      { kind: "tip", title: "Philip Kgosana Drive", detail: "The old De Waal Drive takes you along the mountain into the Gardens and the city centre." },
+      { kind: "tip", title: "Alternatives", detail: "Main Road (M4) and the M5 run parallel through the suburbs. Slower, but useful if the M3 is blocked." }
+    ]}
+  ]
+},
+/* 31 */ {
+  id: "khayelitsha-capetown", a: ["khayelitsha"], b: ["capetown"], commute: true,
+  title: "Khayelitsha and Mitchells Plain to Cape Town", route: "N2 inbound past the airport, or the M5 from the south", distanceKm: 30, driveTime: "35–75 minutes at peak",
+  roads: ["N2", "M5", "R300", "R310", "M7"], places: ["Khayelitsha", "Mitchells Plain", "Mew Way", "Spine Road", "Borcherds Quarry", "Airport", "Bonteheuwel", "Langa", "Jan Smuts", "Hospital Bend", "Baden Powell"],
+  summary: "The N2 is the main route into town but has a serious safety reputation near the airport; plan your route and stay on the highway.",
+  before: [
+    "No tolls on this route.",
+    "Leave before 6:00 to beat the heaviest inbound traffic.",
+    "Keep doors locked and bags out of sight the whole way.",
+    "Check whether MyCiTi's N2 Express bus is running if you'd rather not drive."
+  ],
+  legs: [
+    { name: "Khayelitsha to the airport", items: [
+      { kind: "lane", title: "Joining the N2", detail: "Mew Way and Spine Road connect Khayelitsha to the N2. From Mitchells Plain, the R300 links to the N2." },
+      { kind: "lane", title: "Bus and taxi lanes", detail: "Obey any lanes marked for buses and minibus taxis; traffic officers enforce them at peak." },
+      { kind: "hazard", title: "Taxis and pedestrians", detail: "People cross the N2 near Nyanga and Borcherds Quarry. Watch the shoulders, especially early morning when it's dark." }
+    ]},
+    { name: "The airport to Cape Town", items: [
+      { kind: "safety", title: "Stay on the N2 past the airport", detail: "This stretch is known for objects thrown at cars and robberies. Don't stop on the shoulder; drive to a busy fuel station if you have a problem." },
+      { kind: "safety", title: "Fake obstacles", detail: "Criminals sometimes put rocks or spikes on the road. If you hit something, keep driving slowly to a safe, busy place." },
+      { kind: "lane", title: "Hospital Bend", detail: "The N2 meets the M3 near Groote Schuur. Follow City Centre signs onto Nelson Mandela Boulevard or the M3." },
+      { kind: "tip", title: "M5 alternative", detail: "From Mitchells Plain, Baden Powell Drive to the M5 runs north through the southern suburbs. Longer, but avoids the airport stretch." }
+    ]}
+  ]
+},
+/* 32 */ {
+  id: "tableview-capetown", a: ["tableview"], b: ["capetown"], commute: true,
+  title: "Table View to Cape Town City Centre", route: "R27 (Marine Drive) through Milnerton, or the M5 to the N1", distanceKm: 15, driveTime: "25–55 minutes at peak",
+  roads: ["R27", "N1", "M5", "M14"], places: ["Table View", "Parklands", "Blouberg", "Milnerton", "Marine Drive", "Koeberg", "Paarden Eiland", "Foreshore"],
+  summary: "A short distance that takes long at peak: the R27 has robots all through Table View and Milnerton.",
+  before: [
+    "No tolls on this route.",
+    "Leave before 6:15 to beat the Marine Drive queue.",
+    "MyCiTi buses run from Table View to the city in their own lanes and are often quicker at peak."
+  ],
+  legs: [
+    { name: "Table View to Milnerton", items: [
+      { kind: "hazard", title: "Robots on the R27", detail: "Traffic lights all the way through Table View and Milnerton. Queues build from about 6:30." },
+      { kind: "lane", title: "MyCiTi lanes", detail: "Bus lanes run along parts of the R27. Stay out of them; they're enforced." },
+      { kind: "weather", title: "Southeaster and sand", detail: "Strong summer wind blows sand across the road near the beachfront. Slow down when visibility drops." }
+    ]},
+    { name: "Milnerton to Cape Town City Centre", items: [
+      { kind: "tip", title: "M5 and N1 alternative", detail: "From Milnerton, the M5 to the Koeberg interchange and the N1 can be quicker when Marine Drive is jammed." },
+      { kind: "lane", title: "Into town", detail: "The R27 runs past Paarden Eiland towards the Foreshore. Take the N1 for the CBD and Waterfront exits." }
     ]}
   ]
 }

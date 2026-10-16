@@ -315,7 +315,7 @@ function card(r) {
   const mine = state.user && r.author === state.user.id;
   const myVote = state.myVotes.get(r.id);
   const canVote = !r.example && CONNECTED;
-  return `<article class="card${stale ? " stale" : ""}">
+  return `<article class="card${stale ? " stale" : ""}${state.focusId === r.id ? " focus" : ""}" id="r-${esc(r.id)}">
     <div class="card-top">
       ${r.example ? `<span class="pill ex">Example</span>` : ""}
       <span class="road">${esc(r.road)}${r.dir ? ` <span class="dir">${esc(r.dir)}</span>` : ""}</span>
@@ -331,6 +331,7 @@ function card(r) {
         ${canVote ? `<button class="vote" type="button" data-act="confirm" data-id="${esc(r.id)}" aria-pressed="${myVote === "confirm"}">Still there · ${r.confirms}</button>
         <button class="vote" type="button" data-act="clear" data-id="${esc(r.id)}" aria-pressed="${myVote === "clear"}">Gone now · ${r.cleared}</button>`
         : `<span>${r.confirms} still there · ${r.cleared} gone</span>`}
+        ${r.example ? "" : `<a class="wa-link" href="${esc(waLink(reportShareText(r)))}" target="_blank" rel="noopener">Share on WhatsApp</a>`}
         ${mine ? `<button class="linkbtn" type="button" data-act="delete" data-id="${esc(r.id)}">Delete</button>` : ""}
       </span>
     </div>
@@ -404,6 +405,7 @@ async function loadReports() {
   if (!error) state.reports = data.map(fromRow);
   state.loaded = true;
   render();
+  if (state.pendingReport) focusPendingReport();
 }
 async function loadMyVotes() {
   state.myVotes = new Map();
@@ -433,14 +435,27 @@ function placeKey(input) {
   return best;
 }
 
+const PARENT = window.HKR_PLACE_PARENT || {};
+const PLACE_LABELS = window.HKR_PLACE_LABELS || {};
+function withParents(k) { return PARENT[k] ? [k, PARENT[k]] : [k]; }
+function findGuideKeys(f, t) {
+  if (!f || !t) return null;
+  // Within one city (e.g. Soweto to the East Rand, or Umhlanga to Durban), only a guide written for that exact trip counts.
+  const sameCity = (PARENT[f] && (PARENT[f] === PARENT[t] || PARENT[f] === t)) || (PARENT[t] && PARENT[t] === f);
+  const fs = sameCity ? [f] : withParents(f), ts = sameCity ? [t] : withParents(t);
+  for (const fk of fs) for (const tk of ts) {
+    if (fk === tk) continue;
+    for (const r of ROUTES) {
+      if (r.a.includes(fk) && r.b.includes(tk)) return { route: r, reversed: false };
+      if (r.b.includes(fk) && r.a.includes(tk)) return { route: r, reversed: true };
+    }
+  }
+  return null;
+}
 function findGuide(from, to) {
   const f = placeKey(from), t = placeKey(to);
   if (!f || !t || f === t) return null;
-  for (const r of ROUTES) {
-    if (r.a.includes(f) && r.b.includes(t)) return { route: r, reversed: false };
-    if (r.b.includes(f) && r.a.includes(t)) return { route: r, reversed: true };
-  }
-  return null;
+  return findGuideKeys(f, t);
 }
 
 function swapLegName(name) {
@@ -474,6 +489,7 @@ POPULAR_IDS.map(id => ROUTES.find(r => r.id === id)).filter(Boolean).forEach(r =
   $("popular").appendChild(c);
 });
 const sel = $("p-guides");
+if ($("guides-label")) $("guides-label").textContent = "All " + ROUTES.length + " route guides";
 ROUTES.slice().sort((x, y) => x.title.localeCompare(y.title)).forEach(r => {
   const o = document.createElement("option"); o.value = r.id; o.textContent = r.title; sel.appendChild(o);
 });
@@ -484,7 +500,9 @@ function openGuide(route, reversed, keepInputs) {
   const g = orient(route, reversed);
   if (!keepInputs) { const [a, b] = g.title.split(" to "); $("p-from").value = a; $("p-to").value = b || ""; }
   briefBand.hidden = false;
+  g.shareHash = guideHash(route, reversed);
   renderGuide(g, route);
+  try { history.replaceState(null, "", g.shareHash); } catch (_) {}
   briefBand.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -497,6 +515,28 @@ async function getBriefing(refresh) {
   if (CFG.AI_BRIEFINGS) return aiBriefing(from, to, refresh);
   renderNoGuide(from, to);
   briefBand.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* Sharing */
+const SITE_URL = location.origin + location.pathname;
+const waLink = text => "https://wa.me/?text=" + encodeURIComponent(text);
+function guideHash(route, reversed) { return "#g-" + route.id + (reversed ? "-r" : ""); }
+function reportShareText(r) {
+  const parts = [label(TYPES, r.type) + " on " + r.road + (r.dir ? " " + r.dir : "")];
+  if (r.where) parts.push(r.where);
+  if (r.sev) parts.push(label(SEVS, r.sev));
+  if (r.lane) parts.push(label(LANES, r.lane));
+  return "Heads up: " + parts.join(", ") + " (reported " + ago(r.createdAt) + ").\n" +
+    (r.note ? r.note + "\n" : "") + "Live road reports on Hamba Kahle Roads: " + SITE_URL + "#r-" + r.id;
+}
+function guideShareText(g, hash) {
+  return "Driving " + g.title + "? Here's what to look out for: tolls, passes, fuel stops and live reports from other drivers.\n" +
+    "Hamba Kahle Roads: " + SITE_URL + hash;
+}
+async function copyText(text, btn) {
+  const done = () => { const t = btn.textContent; btn.textContent = "Link copied"; setTimeout(() => btn.textContent = t, 1600); };
+  try { await navigator.clipboard.writeText(text); done(); }
+  catch (_) { window.prompt && window.prompt("Copy this link:", text); }
 }
 
 function itemHtml(it, src) {
@@ -527,9 +567,13 @@ function renderGuide(g, original) {
           <span><b>${live.length}</b> driver report${live.length === 1 ? "" : "s"} in the last 3 days</span>
         </div>
       </div>
-      <div class="chips">
-        ${g.roads.slice(0, 4).map(r => `<button class="chip" type="button" data-road="${esc(r)}">See ${esc(r)} reports</button>`).join("")}
+      <div class="share-row">
+        ${g.shareHash ? `<a class="btn wa" href="${esc(waLink(guideShareText(g, g.shareHash)))}" target="_blank" rel="noopener">Share on WhatsApp</a>
+        <button class="btn ghost small" type="button" id="g-copy">Copy link</button>` : ""}
       </div>
+    </div>
+    <div class="chips">
+      ${g.roads.slice(0, 4).map(r => `<button class="chip" type="button" data-road="${esc(r)}">See ${esc(r)} reports</button>`).join("")}
     </div>
     ${g.summary ? `<p style="margin:0;max-width:70ch">${esc(g.summary)}</p>` : ""}
     <div class="live">
@@ -551,6 +595,8 @@ function renderGuide(g, original) {
     $("q").value = b.dataset.road; state.q = b.dataset.road; render();
     document.querySelector(".search-band").scrollIntoView({ behavior: "smooth" });
   });
+  const cp = $("g-copy");
+  if (cp) cp.onclick = () => copyText(SITE_URL + g.shareHash, cp);
 }
 
 function renderNoGuide(from, to) {
@@ -629,6 +675,129 @@ $("feedback-form").addEventListener("submit", async e => {
   toast("Thanks! Your feedback was sent.");
 });
 
+/* ---------- Place suggestions while typing ---------- */
+const UPPER = new Set(["or", "cbd", "ct", "pe", "jhb", "pta", "dbn", "pmb", "el"]);
+const titleCase = a => a.split(" ").map(w => UPPER.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+const placeLabel = k => PLACE_LABELS[k] || titleCase((PLACES[k] || [k])[0]);
+const SUGGEST = [];
+Object.entries(PLACES).forEach(([key, aliases]) => {
+  const main = placeLabel(key);
+  SUGGEST.push({ text: main, key, area: "", main: true });
+  aliases.forEach(a => {
+    if (a.length <= 3) return;
+    const t = titleCase(a);
+    if (norm(t) === norm(main)) return;
+    SUGGEST.push({ text: t, key, area: main, main: false });
+  });
+});
+function exactGuide(f, t) {
+  return ROUTES.some(r => (r.a.includes(f) && r.b.includes(t)) || (r.b.includes(f) && r.a.includes(t)));
+}
+/* Places with a guide from f: guides written for that exact trip first, then city-level ones.
+   Suburbs reached only through their city's guide are left out in favour of the city itself. */
+function guideKeysFrom(f) {
+  if (!f) return new Set();
+  const exact = [], viaCity = [];
+  Object.keys(PLACES).forEach(t => {
+    if (t === f || !findGuideKeys(f, t)) return;
+    if (exactGuide(f, t)) exact.push(t); else viaCity.push(t);
+  });
+  const all = new Set([...exact, ...viaCity]);
+  return new Set([...exact, ...viaCity.filter(t => !(PARENT[t] && all.has(PARENT[t])))]);
+}
+function suggestFor(input, which) {
+  const q = norm(input.value).replace(/[^a-z0-9' ]+/g, " ").trim();
+  const otherKey = which === "to" ? placeKey($("p-from").value) : null;
+  const guided = guideKeysFrom(otherKey);
+  if (!q) {
+    if (which === "to" && guided.size) return [...guided].map(k => ({ text: placeLabel(k), key: k, area: "", main: true, guide: true })).slice(0, 12);
+    return ["joburg", "pretoria", "durban", "capetown", "gqeberha", "bloem", "eastlondon", "polokwane"].filter(k => PLACES[k]).map(k => ({ text: placeLabel(k), key: k, area: "", main: true }));
+  }
+  const scored = [];
+  SUGGEST.forEach(s => {
+    const t = norm(s.text);
+    let score = -1;
+    if (t.startsWith(q)) score = 3;
+    else if (t.split(" ").some(w => w.startsWith(q))) score = 2;
+    else if (q.length >= 3 && t.includes(q)) score = 1;
+    if (score < 0) return;
+    if (s.main) score += 0.5;
+    const guide = guided.has(s.key) || (PARENT[s.key] && guided.has(PARENT[s.key]));
+    if (guide) score += 2;
+    scored.push({ ...s, guide, score });
+  });
+  scored.sort((a, b) => b.score - a.score || a.text.length - b.text.length);
+  const seen = new Set(), out = [];
+  for (const s of scored) { if (seen.has(s.key)) continue; seen.add(s.key); out.push(s); if (out.length >= 7) break; }
+  return out;
+}
+function setupSuggest(inputId, listId, which) {
+  const input = $(inputId), list = $(listId);
+  let items = [], active = -1;
+  const close = () => { list.hidden = true; input.setAttribute("aria-expanded", "false"); active = -1; };
+  const paint = () => {
+    list.innerHTML = items.map((s, i) => `<div class="sg-item${i === active ? " active" : ""}" role="option" id="${listId}-${i}" data-i="${i}" aria-selected="${i === active}">
+      <span class="sg-text">${esc(s.text)}</span>${s.area ? `<span class="sg-area">${esc(s.area)}</span>` : ""}${s.guide ? `<span class="sg-guide">Route guide</span>` : ""}</div>`).join("");
+    input.setAttribute("aria-activedescendant", active >= 0 ? listId + "-" + active : "");
+  };
+  const open = () => {
+    items = suggestFor(input, which);
+    // Nothing to suggest, or the box already holds the only match: keep the list out of the way.
+    if (!items.length || (items.length === 1 && norm(items[0].text) === norm(input.value))) return close();
+    active = -1; paint(); list.hidden = false; input.setAttribute("aria-expanded", "true");
+  };
+  const pick = i => {
+    const s = items[i]; if (!s) return;
+    input.value = s.text; close();
+    if (which === "from") { $("p-to").focus(); }
+    else if ($("p-from").value.trim()) getBriefing(false);
+  };
+  input.addEventListener("input", open);
+  input.addEventListener("focus", open);
+  input.addEventListener("blur", () => setTimeout(close, 120));
+  input.addEventListener("keydown", e => {
+    if (list.hidden) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); active = Math.min(items.length - 1, active + 1); paint(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); active = Math.max(-1, active - 1); paint(); }
+    else if (e.key === "Enter" && active >= 0) { e.preventDefault(); pick(active); }
+    else if (e.key === "Escape") { close(); }
+  });
+  list.addEventListener("mousedown", e => e.preventDefault());
+  list.addEventListener("click", e => { const el = e.target.closest(".sg-item"); if (el) pick(+el.dataset.i); });
+}
+setupSuggest("p-from", "sg-from", "from");
+setupSuggest("p-to", "sg-to", "to");
+
+/* ---------- Shared links (#g-route-id, #r-report-id) ---------- */
+function handleHash() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h.startsWith("g-")) {
+    const reversed = h.endsWith("-r");
+    const id = reversed ? h.slice(2, -2) : h.slice(2);
+    const route = ROUTES.find(r => r.id === id);
+    if (route) openGuide(route, reversed, false);
+  } else if (h.startsWith("r-")) {
+    state.pendingReport = h.slice(2);
+    focusPendingReport();
+  }
+}
+function focusPendingReport() {
+  const id = state.pendingReport;
+  if (!id || !state.loaded) return;
+  const r = state.reports.find(x => x.id === id);
+  if (!r) { if (CONNECTED && state.reports.length) { toast("That report has expired or was removed."); state.pendingReport = null; } return; }
+  state.pendingReport = null;
+  state.q = ""; $("q").value = ""; state.near = null;
+  state.ageDays = 14;
+  document.querySelectorAll("#age-chips [data-age]").forEach(c => c.setAttribute("aria-pressed", c.dataset.age === "14"));
+  state.focusId = id;
+  render();
+  const el = document.getElementById("r-" + id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => { state.focusId = null; const e2 = document.getElementById("r-" + id); if (e2) e2.classList.remove("focus"); }, 4000);
+}
+window.addEventListener("hashchange", handleHash);
+
 /* ---------- Install + offline ---------- */
 let deferredInstall = null;
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; $("install").hidden = false; });
@@ -657,4 +826,5 @@ if (!CONNECTED) {
     .subscribe();
   setInterval(render, 60000);
 }
+if (/^#(g|r)-/.test(location.hash)) handleHash();
 })();

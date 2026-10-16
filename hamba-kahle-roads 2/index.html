@@ -7,11 +7,17 @@
 <meta name="description" content="Know the road before you go. Trip briefings, potholes, best lanes and live reports from South African drivers.">
 <meta name="theme-color" content="#262c2a">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/logo-mark.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta property="og:title" content="Hamba Kahle Roads">
 <meta property="og:description" content="Know the road before you go. Trip briefings and live reports from South African drivers.">
-<meta property="og:image" content="icons/icon-512.png">
+<meta property="og:image" content="https://hamba-kahle-roads.vercel.app/icons/share-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://hamba-kahle-roads.vercel.app/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@500;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=Overpass+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -22,18 +28,18 @@
 <header class="mast">
   <div class="wrap">
     <div class="topbar">
-      <a class="brand" href="./">Hamba Kahle <span>Roads</span></a>
+      <a class="brand" href="./"><img class="brand-mark" src="icons/logo-mark.svg" alt="" width="44" height="44"><span class="brand-text">Hamba Kahle <span>Roads</span></span></a>
       <div class="account" id="account"></div>
     </div>
     <p class="tag"><em>Hamba kahle</em> means "go well". Tell us your trip and get a list of what to look out for, from other drivers and road know-how the satnav won't give you.</p>
     <form class="planner" id="planner" novalidate>
-      <label class="field"><span>From</span><input type="text" id="p-from" placeholder="Durban" autocomplete="off" maxlength="60"></label>
+      <div class="field sg-wrap"><label for="p-from">From</label><input type="text" id="p-from" placeholder="Durban" autocomplete="off" maxlength="60" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sg-from"><div class="suggest" id="sg-from" role="listbox" hidden></div></div>
       <div class="arrow" aria-hidden="true">→</div>
-      <label class="field"><span>To</span><input type="text" id="p-to" placeholder="Johannesburg" autocomplete="off" maxlength="60"></label>
+      <div class="field sg-wrap"><label for="p-to">To</label><input type="text" id="p-to" placeholder="Johannesburg" autocomplete="off" maxlength="60" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sg-to"><div class="suggest" id="sg-to" role="listbox" hidden></div></div>
       <button class="btn" id="p-go" type="submit">What to look out for</button>
     </form>
     <div class="popular" id="popular"><span class="eyebrow">Popular</span></div>
-    <label class="guides"><span class="eyebrow">All 20 route guides</span>
+    <label class="guides"><span class="eyebrow" id="guides-label">All route guides</span>
       <select id="p-guides"><option value="">Choose a route…</option></select>
     </label>
   </div>
