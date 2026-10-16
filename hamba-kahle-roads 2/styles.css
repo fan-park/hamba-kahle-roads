@@ -222,3 +222,24 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); border-radius: 8px; padding: 10px 14px; display: flex; gap: 14px; align-items: center; z-index: 1000; max-width: calc(100% - 32px); font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
 .toast button { background: none; border: 0; color: var(--marking); font-weight: 700; cursor: pointer; text-transform: uppercase; font-family: var(--display); }
+
+/* Footer links + feedback */
+.foot-links { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.foot-links a { color: var(--muted); font-size: 13px; }
+.foot-links .linkbtn { font-size: 13px; }
+.feedback-tab { position: fixed; right: calc(12px + env(safe-area-inset-right, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 900;
+  background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 8px 14px; font-family: var(--display); font-weight: 800;
+  text-transform: uppercase; letter-spacing: .04em; font-size: 12px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+.feedback-tab:hover { background: var(--marking); color: var(--marking-ink); }
+.dialog-body .note a { color: var(--info); }
+
+/* Privacy + terms pages */
+.mast-slim .wrap { padding-block: 18px 26px; }
+.doc-page .wrap { padding-block: 32px 56px; }
+.prose { max-width: 68ch; display: grid; gap: 4px; }
+.prose h1 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(28px, 5vw, 40px); line-height: 1; margin: 4px 0 8px; text-wrap: balance; }
+.prose h2 { margin-top: 22px; font-size: 18px; }
+.prose p, .prose ul { margin: 6px 0; }
+.prose ul { padding-left: 20px; display: grid; gap: 6px; }
+.prose .lead { font-size: 17px; color: var(--muted); }
+.prose .back { margin-top: 28px; font-size: 14px; }

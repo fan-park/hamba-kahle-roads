@@ -3,6 +3,11 @@
 window.HKR_CONFIG = {
   SUPABASE_URL: "https://xmgpfxtkhbccuhepjcbl.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtZ3BmeHRraGJjY3VoZXBqY2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNzgwMTIsImV4cCI6MjEwNzY1NDAxMn0.w7X9St7OHYWOc9JbOvun0FympwLUcfzIBYTjdMKzhog",
+
+  // Who runs the site. Shown on the privacy and terms pages. Fill these in before inviting people.
+  OWNER_NAME: "Superfan",
+  CONTACT_EMAIL: "officialsuperfanhq@gmail.com",
+
   // Trips without a written route guide can get an AI briefing from Claude.
   // Off by default (free). Set to true only after setting up step 6 in README.md.
   AI_BRIEFINGS: false,

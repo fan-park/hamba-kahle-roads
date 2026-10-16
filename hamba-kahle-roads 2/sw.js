@@ -1,7 +1,7 @@
 // Hamba Kahle Roads service worker: keeps the page shell available offline.
 // Live data (reports, briefings, map tiles) always comes from the network.
-const CACHE = "hkr-shell-v2";
-const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "routes.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
+const CACHE = "hkr-shell-v3";
+const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "routes.js", "privacy.html", "terms.html", "page.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

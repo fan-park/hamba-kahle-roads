@@ -586,6 +586,49 @@ async function aiBriefing(from, to, refresh) {
   }
 }
 
+/* ---------- Feedback ---------- */
+const FB_KINDS = [["guide", "Route guide"], ["bug", "Something's broken"], ["idea", "Idea"], ["other", "Other"]];
+let fbKind = "guide";
+function fbSeg() {
+  const el = $("fb-kind"); el.innerHTML = "";
+  FB_KINDS.forEach(([k, l]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = l; b.setAttribute("aria-pressed", fbKind === k);
+    b.onclick = () => { fbKind = k; fbSeg(); };
+    el.appendChild(b);
+  });
+}
+fbSeg();
+function openFeedback() {
+  $("fb-msg").hidden = true;
+  if (state.user && state.user.email && !$("fb-email").value) $("fb-email").value = state.user.email;
+  const d = $("feedback");
+  if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+}
+$("feedback-open").onclick = openFeedback;
+$("feedback-tab").onclick = openFeedback;
+$("fb-cancel").onclick = () => $("feedback").close();
+$("feedback-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("fb-msg");
+  const text = $("fb-text").value.trim();
+  const email = $("fb-email").value.trim();
+  const show = (t, k) => { msg.textContent = t; msg.className = "msg " + k; msg.hidden = false; };
+  if (text.length < 3) { show("Type a message first.", "err"); return; }
+  if (email && !/^\S+@\S+\.\S+$/.test(email)) { show("That email doesn't look right. Leave it empty if you don't want a reply.", "err"); return; }
+  if (!CONNECTED) { show("Feedback can't be sent until the site is connected to its database.", "err"); return; }
+  $("fb-send").disabled = true;
+  const { error } = await sb.from("feedback").insert({
+    kind: fbKind, message: text.slice(0, 1500), email: email || null,
+    page: (location.pathname + location.hash).slice(0, 200), user_agent: navigator.userAgent.slice(0, 300)
+  });
+  $("fb-send").disabled = false;
+  if (error) { show("Couldn't send just now. Check your signal and try again.", "err"); return; }
+  $("fb-text").value = "";
+  $("feedback").close();
+  toast("Thanks! Your feedback was sent.");
+});
+
 /* ---------- Install + offline ---------- */
 let deferredInstall = null;
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; $("install").hidden = false; });

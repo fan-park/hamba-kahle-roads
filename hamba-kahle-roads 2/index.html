@@ -141,15 +141,37 @@
 
 <footer class="foot">
   <div class="wrap">
-    <span>Hamba Kahle Roads · Reports come from drivers and may be out of date. Always obey road signs and officials.</span>
-    <button class="linkbtn" id="install" type="button" hidden>Add to home screen</button>
+    <span>Hamba Kahle Roads, a Superfan project · <span class="num">officialsuperfanhq@gmail.com</span> · Reports come from drivers and may be out of date. Always obey road signs and officials.</span>
+    <nav class="foot-links" aria-label="Site information">
+      <button class="linkbtn" id="feedback-open" type="button">Send feedback</button>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <button class="linkbtn" id="install" type="button" hidden>Add to home screen</button>
+    </nav>
   </div>
 </footer>
+
+<button class="feedback-tab" id="feedback-tab" type="button">Feedback</button>
+
+<dialog id="feedback">
+  <form method="dialog" id="feedback-form" class="dialog-body">
+    <h2>Send feedback</h2>
+    <p class="note">Something wrong in a route guide, a bug, or an idea? Tell us. Anyone can send this, no sign-in needed.</p>
+    <div class="field"><span>What's it about?</span><div class="seg" id="fb-kind" role="group" aria-label="Feedback type"></div></div>
+    <label class="field"><span>Your message</span><textarea id="fb-text" maxlength="1500" required placeholder="e.g. The N3 guide says the Mooi Toll Plaza is near Estcourt, but it's at Mooi River."></textarea></label>
+    <label class="field"><span>Email, if you'd like a reply (optional)</span><input type="email" id="fb-email" autocomplete="email" maxlength="120"></label>
+    <div class="msg" id="fb-msg" hidden></div>
+    <div class="dialog-actions">
+      <button class="btn ghost" type="button" id="fb-cancel">Cancel</button>
+      <button class="btn" id="fb-send" type="submit">Send</button>
+    </div>
+  </form>
+</dialog>
 
 <dialog id="signin">
   <form method="dialog" id="signin-form" class="dialog-body">
     <h2>Sign in to post</h2>
-    <p class="note">We'll email you a sign-in link. No password needed.</p>
+    <p class="note">We'll email you a sign-in link. No password needed. By signing in you agree to our <a href="terms.html" target="_blank">terms</a> and <a href="privacy.html" target="_blank">privacy notice</a>.</p>
     <label class="field"><span>Email</span><input type="email" id="si-email" required autocomplete="email"></label>
     <label class="field"><span>Name other drivers see (optional)</span><input type="text" id="si-name" maxlength="40" placeholder="e.g. Thabo from Midrand"></label>
     <div class="msg" id="si-msg" hidden></div>
@@ -167,5 +189,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="app.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
