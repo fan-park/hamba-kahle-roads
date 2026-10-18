@@ -559,7 +559,7 @@ window.HKR_ROUTES = [
   ],
   legs: [
     { name: "Cape Town Airport to the City", items: [
-      { kind: "safety", title: "Stay on the N2", detail: "Don't take unfamiliar off-ramps or follow detours into nearby areas. If your satnav suggests a back route, stay on the N2." },
+      { kind: "safety", title: "Stay on the N2", detail: "Don't take unfamiliar off-ramps or follow detours into nearby areas. If your maps app suggests a back route, stay on the N2." },
       { kind: "safety", title: "Never stop on the shoulder", detail: "If you have a problem, keep driving slowly to a busy, well-lit place like a fuel station." },
       { kind: "lane", title: "Hospital Bend", detail: "Where the N2 meets the M3 near Groote Schuur. For the city centre, follow Eastern Boulevard / City Centre signs." },
       { kind: "tip", title: "City Bowl streets", detail: "Many one-way streets and bus-only lanes. Watch for MyCiTi lanes marked in red." }
