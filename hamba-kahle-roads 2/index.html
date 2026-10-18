@@ -32,6 +32,21 @@
       <div class="account" id="account"></div>
     </div>
     <p class="tag"><em>Hamba kahle</em> means "go well". Tell us your trip and get a list of what to look out for, from other drivers and road know-how the satnav won't give you.</p>
+    <section class="welcome" id="welcome" aria-labelledby="welcome-title" hidden>
+      <div class="welcome-head">
+        <h2 id="welcome-title">New here? How it works</h2>
+        <button class="welcome-x" id="welcome-close" type="button" aria-label="Close">×</button>
+      </div>
+      <ol class="welcome-steps">
+        <li><b>Plan</b><span>Type where you're going. You get a route guide with potholes, risky spots, best lanes, tolls and fuel stops.</span></li>
+        <li><b>Check</b><span>See what drivers reported in the last few days. Tap "Still there" or "Gone now" to keep reports honest.</span></li>
+        <li><b>Report</b><span>Passenger, or stopped? One tap tells the next driver what's ahead. Never while driving.</span></li>
+      </ol>
+      <div class="welcome-actions">
+        <button class="btn small" id="welcome-try" type="button">Try Durban to Joburg</button>
+        <button class="welcome-ok" id="welcome-ok" type="button">Got it</button>
+      </div>
+    </section>
     <form class="planner" id="planner" novalidate>
       <div class="field sg-wrap"><label for="p-from">From</label><input type="text" id="p-from" placeholder="Durban" autocomplete="off" maxlength="60" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sg-from"><div class="suggest" id="sg-from" role="listbox" hidden></div></div>
       <div class="arrow" aria-hidden="true">→</div>
@@ -170,6 +185,19 @@
     <div class="dialog-actions">
       <button class="btn ghost" type="button" id="fb-cancel">Cancel</button>
       <button class="btn" id="fb-send" type="submit">Send</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="flag">
+  <form method="dialog" id="flag-form" class="dialog-body">
+    <h2>Flag this report</h2>
+    <p class="note">Flags are private. We hide the report for you straight away, and from everyone once a few drivers flag it.</p>
+    <div class="field"><span>What's wrong with it?</span><div class="seg" id="flag-reason" role="group" aria-label="Reason"></div></div>
+    <div class="msg" id="flag-msg" hidden></div>
+    <div class="dialog-actions">
+      <button class="btn ghost" type="button" id="flag-cancel">Cancel</button>
+      <button class="btn" id="flag-send" type="submit">Flag it</button>
     </div>
   </form>
 </dialog>

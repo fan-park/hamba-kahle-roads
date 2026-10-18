@@ -72,7 +72,7 @@ async function roadAt(pos) {
 }
 
 /* ---------- State ---------- */
-const state = { reports: [], myVotes: new Map(), myReports: new Set(), user: null, q: "", ageDays: 3, near: null, loaded: false };
+const state = { reports: [], myVotes: new Map(), myReports: new Set(), myFlags: new Set(), user: null, q: "", ageDays: 3, near: null, loaded: false };
 const form = { type: "pothole", lane: "", sev: "slow", trip: "" };
 // Public report fields. The poster's user ID is deliberately not shown to anyone.
 const REPORT_COLUMNS = "id,created_at,author_name,road,direction,location_note,type,severity,lane,trip,note,lat,lng,quick,confirms,cleared";
@@ -282,7 +282,7 @@ function renderMap(list) {
 function visible() {
   const cutoff = Date.now() - state.ageDays * 86400000;
   const q = norm(state.q);
-  return state.reports.filter(r => (r.example || r.createdAt >= cutoff) &&
+  return state.reports.filter(r => !state.myFlags.has(r.id) && (r.example || r.createdAt >= cutoff) &&
     (!q || norm([r.road, r.where, r.note, r.dir].join(" ")).includes(q)) &&
     (!state.near || (typeof r.lat === "number" && km(state.near, r) <= 30)));
 }
@@ -293,7 +293,12 @@ function renderCheck(list) {
   const real = list.filter(r => !r.example);
   if (!real.length) {
     el.innerHTML = `<div><div class="eyebrow">Drive check</div><h2>${where}</h2></div>
-      <p class="note" style="color:var(--asphalt-muted)">No reports in this window yet. If you've driven it recently, add what you saw so the next driver knows.</p>`;
+      <p class="note" style="color:var(--asphalt-muted)">No reports in this window yet. If you've driven it recently, add what you saw so the next driver knows.</p>
+      <div><button class="btn small" type="button" id="check-report">Post a quick report</button></div>`;
+    $("check-report").onclick = () => {
+      document.querySelector(".quick-band").scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => qkRoad.focus({ preventScroll: true }), 400);
+    };
     return;
   }
   const hazards = real.filter(r => r.type !== "tip").length;
@@ -339,6 +344,7 @@ function card(r) {
         : `<span>${r.confirms} still there · ${r.cleared} gone</span>`}
         ${r.example ? "" : `<a class="wa-link" href="${esc(waLink(reportShareText(r)))}" target="_blank" rel="noopener">Share on WhatsApp</a>`}
         ${mine ? `<button class="linkbtn" type="button" data-act="delete" data-id="${esc(r.id)}">Delete</button>` : ""}
+        ${canVote && !mine ? `<button class="linkbtn" type="button" data-act="flag" data-id="${esc(r.id)}">Flag</button>` : ""}
       </span>
     </div>
   </article>`;
@@ -365,6 +371,7 @@ $("feed").addEventListener("click", async e => {
   if (!r) return;
   if (b.dataset.act === "map") { if (map) { map.setView([r.lat, r.lng], 14); $("map").scrollIntoView({ behavior: "smooth", block: "center" }); } return; }
   if (!requireSignIn()) return;
+  if (b.dataset.act === "flag") { openFlag(r.id); return; }
   b.disabled = true;
   try {
     if (b.dataset.act === "delete") {
@@ -416,12 +423,15 @@ async function loadReports() {
 async function loadMyVotes() {
   state.myVotes = new Map();
   state.myReports = new Set();
+  state.myFlags = new Set();
   if (!CONNECTED || !state.user) { render(); return; }
-  const [votes, mine] = await Promise.all([
+  const [votes, mine, flags] = await Promise.all([
     sb.from("votes").select("report_id, vote").eq("user_id", state.user.id),
-    sb.rpc("my_report_ids")
+    sb.rpc("my_report_ids"),
+    sb.from("report_flags").select("report_id").eq("user_id", state.user.id)
   ]);
   (votes.data || []).forEach(v => state.myVotes.set(v.report_id, v.vote));
+  (flags.data || []).forEach(f => state.myFlags.add(f.report_id));
   (mine.data || []).forEach(row => state.myReports.add(typeof row === "string" ? row : (row.my_report_ids || row.id)));
   render();
 }
@@ -685,6 +695,59 @@ $("feedback-form").addEventListener("submit", async e => {
   $("feedback").close();
   toast("Thanks! Your feedback was sent.");
 });
+
+/* ---------- Flag a report (spam, abuse, wrong, private info) ---------- */
+const FLAG_REASONS = [["spam", "Spam or advert"], ["abuse", "Rude or abusive"], ["false", "Fake or wrong"], ["private", "Private info"], ["other", "Something else"]];
+let flagReason = "spam", flagTarget = null;
+function flagSeg() {
+  const el = $("flag-reason"); el.innerHTML = "";
+  FLAG_REASONS.forEach(([k, l]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = l; b.setAttribute("aria-pressed", flagReason === k);
+    b.onclick = () => { flagReason = k; flagSeg(); };
+    el.appendChild(b);
+  });
+}
+flagSeg();
+function openFlag(id) {
+  flagTarget = id;
+  $("flag-msg").hidden = true;
+  const d = $("flag");
+  if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+}
+$("flag-cancel").onclick = () => $("flag").close();
+$("flag-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!flagTarget || !state.user) return;
+  const msg = $("flag-msg");
+  $("flag-send").disabled = true;
+  const { error } = await sb.from("report_flags").insert({ report_id: flagTarget, user_id: state.user.id, reason: flagReason });
+  $("flag-send").disabled = false;
+  if (error && error.code !== "23505") {
+    msg.textContent = /Too many/.test(error.message || "") ? "You've flagged a lot in the last hour. Try again later." : "Couldn't send just now. Check your signal and try again.";
+    msg.className = "msg err"; msg.hidden = false; return;
+  }
+  state.myFlags.add(flagTarget);
+  flagTarget = null;
+  $("flag").close();
+  render();
+  toast("Thanks. It's hidden for you, and we'll take a look.");
+});
+
+/* ---------- First-visit welcome ---------- */
+(() => {
+  const el = $("welcome");
+  if (store.get("hkr-welcomed")) return;
+  el.hidden = false;
+  const done = () => { el.hidden = true; store.set("hkr-welcomed", "1"); };
+  $("welcome-close").onclick = done;
+  $("welcome-ok").onclick = done;
+  $("welcome-try").onclick = () => {
+    done();
+    const r = ROUTES.find(x => x.id === "durban-joburg");
+    if (r) openGuide(r, false);
+  };
+})();
 
 /* ---------- Place suggestions while typing ---------- */
 const UPPER = new Set(["or", "cbd", "ct", "pe", "jhb", "pta", "dbn", "pmb", "el"]);

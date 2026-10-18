@@ -58,6 +58,12 @@ create table if not exists public.briefings (
   created_at timestamptz not null default now()
 );
 
+-- ---------- Table access for the website (newer Supabase projects don't grant this automatically) ----------
+grant usage on schema public to anon, authenticated;
+grant select on table public.reports, public.votes, public.briefings to anon, authenticated;
+grant insert, delete on table public.reports to authenticated;
+grant insert, update, delete on table public.votes to authenticated;
+
 -- ---------- Security: who can read and write what ----------
 alter table public.reports   enable row level security;
 alter table public.votes     enable row level security;
@@ -105,3 +111,128 @@ create trigger reports_rate_limit before insert on public.reports
 do $$ begin
   alter publication supabase_realtime add table public.reports;
 exception when duplicate_object then null; end $$;
+
+
+
+create table if not exists public.feedback (
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  kind       text not null check (kind in ('guide', 'bug', 'idea', 'other')),
+  message    text not null check (char_length(message) between 3 and 1500),
+  email      text check (char_length(email) <= 120),
+  page       text check (char_length(page) <= 200),
+  user_agent text check (char_length(user_agent) <= 300),
+  user_id    uuid default auth.uid()
+);
+
+alter table public.feedback enable row level security;
+
+grant insert on table public.feedback to anon, authenticated;
+
+drop policy if exists "anyone can send feedback" on public.feedback;
+create policy "anyone can send feedback" on public.feedback
+  for insert to anon, authenticated with check (true);
+
+-- Simple spam brake: at most 200 feedback messages per hour across the whole site
+create or replace function public.limit_feedback_rate() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if (select count(*) from public.feedback where created_at > now() - interval '1 hour') >= 200 then
+    raise exception 'Too much feedback right now. Try again later.';
+  end if;
+  return new;
+end $$;
+drop trigger if exists feedback_rate_limit on public.feedback;
+create trigger feedback_rate_limit before insert on public.feedback
+  for each row execute function public.limit_feedback_rate();
+
+-- ---------- Hardening (applied 18 Oct 2026) ----------
+-- Trigger functions are never called directly through the API
+revoke execute on function public.limit_report_rate() from public, anon, authenticated;
+revoke execute on function public.refresh_vote_counts() from public, anon, authenticated;
+
+-- Feedback spam brake: 200 an hour site-wide, 10 an hour per signed-in person
+create or replace function public.limit_feedback_rate() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if (select count(*) from public.feedback where created_at > now() - interval '1 hour') >= 200 then
+    raise exception 'Too much feedback right now. Try again later.';
+  end if;
+  if new.user_id is not null and
+     (select count(*) from public.feedback where user_id = new.user_id and created_at > now() - interval '1 hour') >= 10 then
+    raise exception 'Too much feedback from you in the last hour. Try again later.';
+  end if;
+  return new;
+end $$;
+create or replace trigger feedback_rate_limit before insert on public.feedback
+  for each row execute function public.limit_feedback_rate();
+revoke execute on function public.limit_feedback_rate() from public, anon, authenticated;
+
+-- Remove table permissions the website never uses
+revoke truncate, trigger, references on table public.reports, public.votes, public.briefings, public.feedback from anon, authenticated;
+
+-- ---------- Privacy (applied 18 Oct 2026) ----------
+-- Lets a signed-in person find their own reports without exposing anyone's user ID
+create or replace function public.my_report_ids() returns setof uuid
+language sql stable security definer set search_path = public as $$
+  select id from public.reports where author = auth.uid()
+$$;
+revoke execute on function public.my_report_ids() from public, anon;
+grant execute on function public.my_report_ids() to authenticated;
+
+-- Round report locations to about 100 m, whatever the device sends
+create or replace function public.round_report_location() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if new.lat is not null then new.lat := round(new.lat::numeric, 3)::double precision; end if;
+  if new.lng is not null then new.lng := round(new.lng::numeric, 3)::double precision; end if;
+  return new;
+end $$;
+create or replace trigger reports_round_location before insert or update of lat, lng on public.reports
+  for each row execute function public.round_report_location();
+revoke execute on function public.round_report_location() from public, anon, authenticated;
+
+-- Votes are private: each person sees only their own (totals stay on each report)
+alter policy "votes readable by all" on public.votes to authenticated using (user_id = auth.uid());
+alter policy "votes readable by all" on public.votes rename to "read own votes";
+revoke select on table public.votes from anon;
+
+-- Hide the poster's user ID: everyone can read every report column except author
+revoke select on table public.reports from anon, authenticated;
+grant select (id, created_at, author_name, road, direction, location_note, type, severity, lane, trip, note, lat, lng, quick, confirms, cleared)
+  on table public.reports to anon, authenticated;
+
+-- Live updates only carry the report ID and time; the site then reloads the public fields
+alter publication supabase_realtime set table public.reports (id, created_at);
+
+-- ---------- Flags (applied 18 Oct 2026) ----------
+-- Drivers can flag a report once (spam, abuse, fake, private info). Flags are private.
+-- A report with 3 or more flags is hidden from everyone. To restore one: delete its rows
+-- in report_flags, then set its flags column back to 0 in the Table Editor.
+alter table public.reports add column if not exists flags integer not null default 0;
+create table if not exists public.report_flags (
+  report_id  uuid not null references public.reports(id) on delete cascade,
+  user_id    uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  reason     text not null check (reason in ('spam','abuse','false','private','other')),
+  created_at timestamptz not null default now(),
+  primary key (report_id, user_id)
+);
+create index if not exists report_flags_user_idx on public.report_flags (user_id, created_at desc);
+alter table public.report_flags enable row level security;
+grant select, insert on table public.report_flags to authenticated;
+create policy "flag as yourself" on public.report_flags for insert to authenticated with check (user_id = auth.uid());
+create policy "read own flags" on public.report_flags for select to authenticated using (user_id = auth.uid());
+create or replace function public.refresh_flag_count() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if (select count(*) from public.report_flags where user_id = new.user_id and created_at > now() - interval '1 hour') > 20 then
+    raise exception 'Too many flags in the last hour. Try again later.';
+  end if;
+  update public.reports set flags = (select count(*) from public.report_flags where report_id = new.report_id) where id = new.report_id;
+  return null;
+end $$;
+create or replace trigger report_flags_count after insert on public.report_flags
+  for each row execute function public.refresh_flag_count();
+revoke execute on function public.refresh_flag_count() from public, anon, authenticated;
+alter policy "reports readable by all" on public.reports using (flags < 3);
+alter policy "post own reports" on public.reports with check (author = auth.uid() and confirms = 0 and cleared = 0 and flags = 0);

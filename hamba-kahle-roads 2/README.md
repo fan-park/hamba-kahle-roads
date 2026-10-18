@@ -91,7 +91,7 @@ Write each guide in one direction only; the site reverses it automatically for t
 ## Before you launch publicly
 
 - **Map tiles and road-name lookup** use OpenStreetMap's free servers, which are fine for testing and light use. Once you have real traffic, switch to a provider with a free plan, such as MapTiler, Stadia Maps or Mapbox: change the `L.tileLayer(...)` address in `app.js` and the `nominatim.openstreetmap.org` lookup in `roadAt()`.
-- **Moderation:** to remove a bad report, open Supabase **Table Editor → reports**, find the row and delete it.
+- **Moderation:** drivers can flag reports; 3 flags hide a report from everyone. Check flagged reports in Supabase **Table Editor → report_flags**. To remove a bad report, delete its row in **reports**.
 - **Privacy:** you're collecting email addresses and locations, so add a privacy notice that covers POPIA.
 - **Safety message:** the site tells people not to report while driving. Keep it prominent.
 

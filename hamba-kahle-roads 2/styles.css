@@ -266,3 +266,18 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 
 .brand { display: inline-flex; align-items: center; gap: 12px; }
 .brand-mark { width: clamp(34px, 6vw, 46px); height: auto; border-radius: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.08); flex: none; }
+
+/* First-visit welcome */
+.welcome { border: 1px solid #46504c; border-left: 4px solid var(--marking); border-radius: 10px; padding: 16px; display: grid; gap: 14px; background: var(--asphalt-2); }
+.welcome-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.welcome h2 { color: var(--asphalt-ink); font-size: 17px; }
+.welcome-x { background: none; border: 0; color: var(--asphalt-muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.welcome-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; counter-reset: step; }
+.welcome-steps li { counter-increment: step; display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 10px; row-gap: 2px; align-content: start; }
+.welcome-steps li::before { content: counter(step); grid-row: span 2; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 6px;
+  background: var(--marking); color: var(--marking-ink); font-family: var(--display); font-weight: 900; font-size: 16px; }
+.welcome-steps b { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--asphalt-ink); }
+.welcome-steps span { font-size: 14px; color: var(--asphalt-muted); }
+.welcome-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.welcome-ok { background: none; border: 0; color: var(--asphalt-ink); text-decoration: underline; cursor: pointer; font-size: 14px; padding: 0; }
+@media (max-width: 700px) { .welcome-steps { grid-template-columns: minmax(0, 1fr); } }
