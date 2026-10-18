@@ -113,11 +113,21 @@ function renderAccount() {
   if (!CONNECTED) { el.innerHTML = ""; return; }
   if (state.user) {
     el.innerHTML = `<span>Signed in${displayName() ? " as " + esc(displayName()) : ""}</span><button type="button" id="signout">Sign out</button>`;
-    $("signout").onclick = async () => { await sb.auth.signOut(); toast("Signed out."); };
+    $("signout").onclick = signOutHere;
   } else {
     el.innerHTML = `<button type="button" id="signin-open">Sign in to post</button>`;
     $("signin-open").onclick = openSignIn;
   }
+}
+// Sign out on this device only. If the session was already ended elsewhere (e.g. signed out
+// on another device), the server says "session not found" — clear it locally anyway.
+async function signOutHere() {
+  const { error } = await sb.auth.signOut({ scope: "local" });
+  if (error) { try { await sb.auth.signOut({ scope: "local" }); } catch (_) {} }
+  state.user = null;
+  renderAccount();
+  loadMyVotes();
+  toast("Signed out.");
 }
 function openSignIn() {
   $("si-msg").hidden = true;
@@ -911,7 +921,17 @@ if (!CONNECTED) {
   render();
 } else {
   render();
-  sb.auth.getSession().then(({ data }) => { state.user = data.session ? data.session.user : null; renderAccount(); loadMyVotes(); });
+  sb.auth.getSession().then(async ({ data }) => {
+    state.user = data.session ? data.session.user : null; renderAccount(); loadMyVotes();
+    // A session ended on another device still looks signed in here until it's checked.
+    if (data.session) {
+      const { error } = await sb.auth.getUser();
+      if (error && (error.status === 401 || error.status === 403 || /session/i.test(error.message || ""))) {
+        try { await sb.auth.signOut({ scope: "local" }); } catch (_) {}
+        state.user = null; renderAccount(); loadMyVotes();
+      }
+    }
+  });
   sb.auth.onAuthStateChange((_evt, session) => {
     const was = state.user && state.user.id;
     state.user = session ? session.user : null;
