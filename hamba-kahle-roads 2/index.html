@@ -212,7 +212,10 @@
     <div class="msg" id="si-msg" hidden></div>
     <div class="code-step" id="si-code-step" hidden>
       <label class="field"><span>Code from the email</span>
-        <input type="text" id="si-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" pattern="[0-9 ]*">
+        <span class="inline">
+          <input type="text" id="si-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" pattern="[0-9 ]*">
+          <button class="btn ghost small" id="si-paste" type="button" hidden>Paste</button>
+        </span>
       </label>
       <button class="btn" id="si-verify" type="button">Sign in with code</button>
     </div>

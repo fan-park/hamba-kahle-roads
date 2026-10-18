@@ -156,6 +156,26 @@ async function verifyCode() {
   toast("You're signed in.");
 }
 $("si-verify").onclick = verifyCode;
+// Supabase "Email OTP Length" is set to 6: sign in as soon as 6 digits are typed or pasted.
+const CODE_LEN = 6;
+let lastTried = "";
+$("si-code").addEventListener("input", () => {
+  const digits = $("si-code").value.replace(/\D/g, "");
+  if (digits.length === CODE_LEN && digits !== lastTried && !$("si-verify").disabled) { lastTried = digits; verifyCode(); }
+});
+// One-tap paste for people who copied the code from their email app.
+if (navigator.clipboard && navigator.clipboard.readText) {
+  $("si-paste").hidden = false;
+  $("si-paste").onclick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const m = (text || "").match(/\d[\d ]{4,12}\d/);
+      if (!m) { toast("No code found on your clipboard. Copy the code from the email first."); return; }
+      $("si-code").value = m[0].replace(/\D/g, "");
+      $("si-code").dispatchEvent(new Event("input"));
+    } catch (_) { $("si-code").focus(); toast("Long-press the box and choose Paste."); }
+  };
+}
 $("si-code").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); verifyCode(); } });
 $("si-email").addEventListener("input", () => { if (siSentTo && $("si-email").value.trim() !== siSentTo) { siSentTo = null; $("si-code-step").hidden = true; $("si-send").textContent = "Email me a link"; $("si-send").classList.remove("ghost"); } });
 $("signin-form").addEventListener("submit", async e => {
