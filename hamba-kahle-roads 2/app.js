@@ -334,7 +334,7 @@ function renderCheck(list) {
   const real = list.filter(r => !r.example);
   if (!real.length) {
     el.innerHTML = `<div><div class="eyebrow">Drive check</div><h2>${where}</h2></div>
-      <p class="note" style="color:var(--asphalt-muted)">No reports in this window yet. If you've driven it recently, add what you saw so the next driver knows.</p>
+      <p class="note" style="color:var(--asphalt-muted)">No reports in this window. That doesn't mean the road is clear, only that nobody has reported anything yet. If you've driven it recently, add what you saw so the next driver knows.</p>
       <div><button class="btn small" type="button" id="check-report">Post a quick report</button></div>`;
     $("check-report").onclick = () => {
       document.querySelector(".quick-band").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -589,10 +589,10 @@ function reportShareText(r) {
   if (r.sev) parts.push(label(SEVS, r.sev));
   if (r.lane) parts.push(label(LANES, r.lane));
   return "Heads up: " + parts.join(", ") + " (reported " + ago(r.createdAt) + ").\n" +
-    (r.note ? r.note + "\n" : "") + "Live road reports on Hamba Kahle Roads: " + SITE_URL + "#r-" + r.id;
+    (r.note ? r.note + "\n" : "") + "More road reports on Hamba Kahle Roads: " + SITE_URL + "#r-" + r.id;
 }
 function guideShareText(g, hash) {
-  return "Driving " + g.title + "? Here's what to look out for: tolls, passes, fuel stops and live reports from other drivers.\n" +
+  return "Driving " + g.title + "? Here's what to look out for: tolls, passes, fuel stops and recent reports from other drivers.\n" +
     "Hamba Kahle Roads: " + SITE_URL + hash;
 }
 async function copyText(text, btn) {
@@ -641,7 +641,7 @@ function renderGuide(g, original) {
     <div class="live">
       <h3>From drivers, last 3 days</h3>
       ${liveItems.length ? `<div class="items">${liveItems.map(it => itemHtml(it, "drivers")).join("")}</div>`
-        : `<p class="note">No driver reports on these roads in the last 3 days. Driven it recently? Add a quick report below so the next driver knows.</p>`}
+        : `<p class="note">No driver reports on these roads in the last 3 days. That doesn't mean there are no hazards, only that nobody has reported any. Driven it recently? Add a quick report below so the next driver knows.</p>`}
     </div>
     <div class="brief-grid">
       <div class="before">

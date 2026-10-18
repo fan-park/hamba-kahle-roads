@@ -1,7 +1,7 @@
 {
   "name": "Hamba Kahle Roads",
   "short_name": "Hamba Kahle",
-  "description": "Know the road before you go. Trip briefings and live reports from South African drivers.",
+  "description": "Know the road before you go. Route guides and recent driver reports for South African roads.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

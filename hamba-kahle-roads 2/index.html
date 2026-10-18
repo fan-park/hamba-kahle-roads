@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hamba Kahle Roads</title>
-<meta name="description" content="Know the road before you go. Trip briefings, potholes, best lanes and live reports from South African drivers.">
+<title>Hamba Kahle Roads | South African Road Tips &amp; Reports</title>
+<meta name="description" content="Plan South African road trips with local tips, recent driver reports and route information. Check what to look out for before you travel.">
 <meta name="theme-color" content="#262c2a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/logo-mark.svg" type="image/svg+xml">
 <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta property="og:title" content="Hamba Kahle Roads">
-<meta property="og:description" content="Know the road before you go. Trip briefings and live reports from South African drivers.">
+<meta property="og:description" content="Know the road before you go. Route guides and recent driver reports for South African roads.">
 <meta property="og:image" content="https://hambakahleroads.co.za/icons/share-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,7 +29,7 @@
 <header class="mast">
   <div class="wrap">
     <div class="topbar">
-      <a class="brand" href="./"><img class="brand-mark" src="icons/logo-mark.svg" alt="" width="44" height="44"><span class="brand-text">Hamba Kahle <span>Roads</span></span></a>
+      <h1 class="brand-h1"><a class="brand" href="./"><img class="brand-mark" src="icons/logo-mark.svg" alt="" width="44" height="44"><span class="brand-text">Hamba Kahle <span>Roads</span></span></a></h1>
       <div class="account" id="account"></div>
     </div>
     <p class="tag"><em>Hamba kahle</em> means "go well". Tell us your trip and get a list of what to look out for, from other drivers and road know-how the satnav won't give you.</p>
@@ -73,8 +73,9 @@
   <div class="wrap">
     <div class="quick-head">
       <div>
-        <div class="eyebrow">On the road? One tap to report</div>
+        <div class="eyebrow">Spotted a hazard? One tap to report</div>
         <p class="note">Passengers only, or once you've stopped. Never while driving.</p>
+        <p class="note">A tap posts the hazard and road. To add the lane, how bad it is or a tip, use "Add a detailed report" further down.</p>
       </div>
       <label class="field road-field"><span>Road you're on</span>
         <span class="inline">
@@ -85,6 +86,7 @@
     </div>
     <div class="tiles" id="tiles"></div>
     <p class="note" id="qk-status" hidden></p>
+    <p class="note">Your location is only used when you tap a button that asks for it. Reports show it rounded to about 100 m, never your exact spot. You can always type the road instead.</p>
   </div>
 </section>
 
@@ -92,7 +94,7 @@
   <div class="wrap">
     <div class="map-head">
       <h2>Reports on the map</h2>
-      <span class="note">Reports posted with a location show here. Tap a pin for details.</span>
+      <span class="note">Reports posted with a location show here. Tap a pin for details. No pins doesn't mean no hazards.</span>
     </div>
     <div id="map" role="region" aria-label="Map of road reports"></div>
   </div>
@@ -126,7 +128,7 @@
             </label>
           </div>
           <label class="field"><span>Where exactly</span><input type="text" id="f-where" placeholder="Between Rivonia and Malibongwe off-ramps" maxlength="90"></label>
-          <label class="check-row"><input type="checkbox" id="f-geo"> <span>Pin it to my current location</span></label>
+          <label class="check-row"><input type="checkbox" id="f-geo"> <span>Pin it to my current location (shown rounded to about 100 m)</span></label>
           <div class="field"><span>What's there</span><div class="seg" id="f-type" role="group" aria-label="Report type"></div></div>
           <div class="field"><span>Best lane</span><div class="seg" id="f-lane" role="group" aria-label="Lane advice"></div></div>
           <div class="field"><span>How bad</span><div class="seg" id="f-sev" role="group" aria-label="Severity"></div></div>
@@ -166,6 +168,7 @@
     <span>Hamba Kahle Roads, a Superfan project · <span class="num">officialsuperfanhq@gmail.com</span> · Reports come from drivers and may be out of date. Always obey road signs and officials.</span>
     <nav class="foot-links" aria-label="Site information">
       <button class="linkbtn" id="feedback-open" type="button">Send feedback</button>
+      <a href="about.html">About</a>
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
       <button class="linkbtn" id="install" type="button" hidden>Add to home screen</button>
