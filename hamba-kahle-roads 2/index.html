@@ -206,10 +206,16 @@
 <dialog id="signin">
   <form method="dialog" id="signin-form" class="dialog-body">
     <h2>Sign in to post</h2>
-    <p class="note">We'll email you a sign-in link. No password needed. By signing in you agree to our <a href="terms.html" target="_blank">terms</a> and <a href="privacy.html" target="_blank">privacy notice</a>.</p>
+    <p class="note">We'll email you a sign-in link and a code. No password needed. By signing in you agree to our <a href="terms.html" target="_blank">terms</a> and <a href="privacy.html" target="_blank">privacy notice</a>.</p>
     <label class="field"><span>Email</span><input type="email" id="si-email" required autocomplete="email"></label>
     <label class="field"><span>Name other drivers see (optional)</span><input type="text" id="si-name" maxlength="40" placeholder="e.g. Thabo from Midrand"></label>
     <div class="msg" id="si-msg" hidden></div>
+    <div class="code-step" id="si-code-step" hidden>
+      <label class="field"><span>Code from the email</span>
+        <input type="text" id="si-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" pattern="[0-9 ]*">
+      </label>
+      <button class="btn" id="si-verify" type="button">Sign in with code</button>
+    </div>
     <div class="dialog-actions">
       <button class="btn ghost" value="cancel" type="button" id="si-cancel">Cancel</button>
       <button class="btn" id="si-send" type="submit">Email me a link</button>

@@ -131,6 +131,23 @@ function requireSignIn() {
   return true;
 }
 $("si-cancel").onclick = () => $("signin").close();
+let siSentTo = null;
+async function verifyCode() {
+  const msg = $("si-msg");
+  const token = $("si-code").value.replace(/\D/g, "");
+  if (!siSentTo) return;
+  if (token.length < 6) { msg.textContent = "Type the code from the email (6 or more digits)."; msg.className = "msg err"; msg.hidden = false; return; }
+  $("si-verify").disabled = true;
+  const { error } = await sb.auth.verifyOtp({ email: siSentTo, token, type: "email" });
+  $("si-verify").disabled = false;
+  if (error) { msg.textContent = "That code didn't work. Check it, or tap \"Send again\" for a new one."; msg.className = "msg err"; msg.hidden = false; return; }
+  $("si-code").value = "";
+  if ($("signin").open) $("signin").close();
+  toast("You're signed in.");
+}
+$("si-verify").onclick = verifyCode;
+$("si-code").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); verifyCode(); } });
+$("si-email").addEventListener("input", () => { if (siSentTo && $("si-email").value.trim() !== siSentTo) { siSentTo = null; $("si-code-step").hidden = true; $("si-send").textContent = "Email me a link"; $("si-send").classList.remove("ghost"); } });
 $("signin-form").addEventListener("submit", async e => {
   e.preventDefault();
   const email = $("si-email").value.trim();
@@ -142,7 +159,14 @@ $("signin-form").addEventListener("submit", async e => {
   const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname, data: { display_name: name } } });
   $("si-send").disabled = false;
   if (error) { msg.textContent = "Couldn't send the link: " + error.message; msg.className = "msg err"; }
-  else { msg.textContent = "Check your email and tap the link to finish signing in."; msg.className = "msg ok"; }
+  else {
+    siSentTo = email;
+    msg.textContent = "Sent! Tap the link in the email, or type the code below. Check spam if it's not there in a minute.";
+    msg.className = "msg ok";
+    $("si-code-step").hidden = false;
+    $("si-send").textContent = "Send again"; $("si-send").classList.add("ghost");
+    setTimeout(() => $("si-code").focus(), 50);
+  }
   msg.hidden = false;
 });
 
