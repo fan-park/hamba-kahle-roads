@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "hamba-kahle-roads.vercel.app" }],
+      "destination": "https://hambakahleroads.co.za/:path*",
+      "permanent": true
+    }
+  ]
+}

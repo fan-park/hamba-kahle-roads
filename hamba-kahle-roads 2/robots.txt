@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hambakahleroads.co.za/sitemap.xml
