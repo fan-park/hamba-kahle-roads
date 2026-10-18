@@ -72,10 +72,14 @@ async function roadAt(pos) {
 }
 
 /* ---------- State ---------- */
-const state = { reports: [], myVotes: new Map(), user: null, q: "", ageDays: 3, near: null, loaded: false };
+const state = { reports: [], myVotes: new Map(), myReports: new Set(), user: null, q: "", ageDays: 3, near: null, loaded: false };
 const form = { type: "pothole", lane: "", sev: "slow", trip: "" };
+// Public report fields. The poster's user ID is deliberately not shown to anyone.
+const REPORT_COLUMNS = "id,created_at,author_name,road,direction,location_note,type,severity,lane,trip,note,lat,lng,quick,confirms,cleared";
+// Reports store locations rounded to about 100 m so nobody's exact position is published.
+const roundLoc = v => (typeof v === "number" ? Math.round(v * 1000) / 1000 : null);
 const fromRow = r => ({
-  id: r.id, createdAt: Date.parse(r.created_at), author: r.author, authorName: r.author_name || "",
+  id: r.id, createdAt: Date.parse(r.created_at), authorName: r.author_name || "",
   road: r.road, dir: r.direction || "", where: r.location_note || "", type: r.type, sev: r.severity || "",
   lane: r.lane || "", trip: r.trip || "", note: r.note || "", lat: r.lat, lng: r.lng, quick: r.quick,
   confirms: r.confirms || 0, cleared: r.cleared || 0
@@ -161,8 +165,10 @@ seg("f-trip", TRIPS, "trip", true);
 function showMsg(text, kind) { const m = $("f-msg"); m.textContent = text; m.className = "msg" + (kind ? " " + kind : ""); m.hidden = !text; }
 
 async function insertReport(row) {
-  const { data, error } = await sb.from("reports").insert({ ...row, author: state.user.id, author_name: displayName() || null }).select("id").single();
+  const clean = { ...row, lat: roundLoc(row.lat), lng: roundLoc(row.lng) };
+  const { data, error } = await sb.from("reports").insert({ ...clean, author: state.user.id, author_name: displayName() || null }).select("id").single();
   if (error) throw error;
+  state.myReports.add(data.id);
   return data.id;
 }
 
@@ -312,7 +318,7 @@ function renderCheck(list) {
 
 function card(r) {
   const stale = r.cleared > r.confirms;
-  const mine = state.user && r.author === state.user.id;
+  const mine = !!state.user && state.myReports.has(r.id);
   const myVote = state.myVotes.get(r.id);
   const canVote = !r.example && CONNECTED;
   return `<article class="card${stale ? " stale" : ""}${state.focusId === r.id ? " focus" : ""}" id="r-${esc(r.id)}">
@@ -401,7 +407,7 @@ let loadTimer = null;
 async function loadReports() {
   if (!CONNECTED) return;
   const since = new Date(Date.now() - 14 * 86400000).toISOString();
-  const { data, error } = await sb.from("reports").select("*").gte("created_at", since).order("created_at", { ascending: false }).limit(500);
+  const { data, error } = await sb.from("reports").select(REPORT_COLUMNS).gte("created_at", since).order("created_at", { ascending: false }).limit(500);
   if (!error) state.reports = data.map(fromRow);
   state.loaded = true;
   render();
@@ -409,9 +415,14 @@ async function loadReports() {
 }
 async function loadMyVotes() {
   state.myVotes = new Map();
+  state.myReports = new Set();
   if (!CONNECTED || !state.user) { render(); return; }
-  const { data } = await sb.from("votes").select("report_id, vote").eq("user_id", state.user.id);
-  (data || []).forEach(v => state.myVotes.set(v.report_id, v.vote));
+  const [votes, mine] = await Promise.all([
+    sb.from("votes").select("report_id, vote").eq("user_id", state.user.id),
+    sb.rpc("my_report_ids")
+  ]);
+  (votes.data || []).forEach(v => state.myVotes.set(v.report_id, v.vote));
+  (mine.data || []).forEach(row => state.myReports.add(typeof row === "string" ? row : (row.my_report_ids || row.id)));
   render();
 }
 
