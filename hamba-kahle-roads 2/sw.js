@@ -1,6 +1,6 @@
 // Hamba Kahle Roads service worker: keeps the page shell available offline.
 // Live data (reports, briefings, map tiles) always comes from the network.
-const CACHE = "hkr-shell-v12";
+const CACHE = "hkr-shell-v13";
 const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "routes.js", "about.html", "privacy.html", "terms.html", "page.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/logo-mark.svg"];
 
 self.addEventListener("install", e => {
@@ -15,8 +15,13 @@ self.addEventListener("fetch", e => {
   // Network first so updates show straight away; fall back to the cached shell when offline.
   e.respondWith(
     fetch(e.request).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, copy));
+      if (res.ok && res.type === "basic") {
+        // Only keep good copies; an error page must never replace the working offline version.
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      }
+      if (res.status >= 500) return caches.match(e.request).then(r => r || res);
       return res;
     }).catch(() => caches.match(e.request).then(r => r || caches.match("index.html")))
   );

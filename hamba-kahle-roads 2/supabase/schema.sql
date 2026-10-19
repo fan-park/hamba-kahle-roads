@@ -193,8 +193,14 @@ create or replace trigger reports_round_location before insert or update of lat,
 revoke execute on function public.round_report_location() from public, anon, authenticated;
 
 -- Votes are private: each person sees only their own (totals stay on each report)
-alter policy "votes readable by all" on public.votes to authenticated using (user_id = auth.uid());
-alter policy "votes readable by all" on public.votes rename to "read own votes";
+do $$ begin
+  if exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'votes' and policyname = 'read own votes') then
+    drop policy if exists "votes readable by all" on public.votes;
+  else
+    alter policy "votes readable by all" on public.votes rename to "read own votes";
+  end if;
+end $$;
+alter policy "read own votes" on public.votes to authenticated using (user_id = auth.uid());
 revoke select on table public.votes from anon;
 
 -- Hide the poster's user ID: everyone can read every report column except author
@@ -220,7 +226,9 @@ create table if not exists public.report_flags (
 create index if not exists report_flags_user_idx on public.report_flags (user_id, created_at desc);
 alter table public.report_flags enable row level security;
 grant select, insert on table public.report_flags to authenticated;
+drop policy if exists "flag as yourself" on public.report_flags;
 create policy "flag as yourself" on public.report_flags for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "read own flags" on public.report_flags;
 create policy "read own flags" on public.report_flags for select to authenticated using (user_id = auth.uid());
 create or replace function public.refresh_flag_count() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -236,3 +244,83 @@ create or replace trigger report_flags_count after insert on public.report_flags
 revoke execute on function public.refresh_flag_count() from public, anon, authenticated;
 alter policy "reports readable by all" on public.reports using (flags < 3);
 alter policy "post own reports" on public.reports with check (author = auth.uid() and confirms = 0 and cleared = 0 and flags = 0);
+
+-- ---------- Review fixes (applied 19 Oct 2026) ----------
+-- The database stamps created_at itself, so posts can't be backdated or future-dated to dodge limits.
+create or replace function public.set_server_time() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  new.created_at := now();
+  return new;
+end $$;
+revoke execute on function public.set_server_time() from public, anon, authenticated;
+create or replace trigger reports_a_server_time before insert on public.reports for each row execute function public.set_server_time();
+create or replace trigger votes_a_server_time before insert on public.votes for each row execute function public.set_server_time();
+create or replace trigger report_flags_a_server_time before insert on public.report_flags for each row execute function public.set_server_time();
+
+-- Feedback is attributed to the real signed-in user (or nobody), never to an ID the browser sends.
+create or replace function public.set_feedback_identity() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  new.created_at := now();
+  new.user_id := auth.uid();
+  return new;
+end $$;
+revoke execute on function public.set_feedback_identity() from public, anon, authenticated;
+create or replace trigger feedback_a_identity before insert on public.feedback for each row execute function public.set_feedback_identity();
+
+-- Rate limits take a per-person lock so parallel requests can't slip past the count.
+create or replace function public.limit_report_rate() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  perform pg_advisory_xact_lock(hashtext('report:' || new.author::text));
+  if (select count(*) from public.reports
+      where author = new.author and created_at > now() - interval '1 hour') >= 20 then
+    raise exception 'Too many reports in the last hour. Try again later.';
+  end if;
+  return new;
+end $$;
+create or replace function public.limit_feedback_rate() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  perform pg_advisory_xact_lock(hashtext('feedback:' || coalesce(new.user_id::text, 'anon')));
+  if (select count(*) from public.feedback where created_at > now() - interval '1 hour') >= 200 then
+    raise exception 'Too much feedback right now. Try again later.';
+  end if;
+  if new.user_id is not null and
+     (select count(*) from public.feedback where user_id = new.user_id and created_at > now() - interval '1 hour') >= 10 then
+    raise exception 'Too much feedback from you in the last hour. Try again later.';
+  end if;
+  return new;
+end $$;
+
+-- A vote can switch between "still there" and "gone", but can't move to another report or person.
+create or replace function public.lock_vote_identity() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if new.report_id is distinct from old.report_id or new.user_id is distinct from old.user_id then
+    raise exception 'A vote cannot be moved to another report.';
+  end if;
+  new.created_at := old.created_at;
+  return new;
+end $$;
+revoke execute on function public.lock_vote_identity() from public, anon, authenticated;
+create or replace trigger votes_lock_identity before update on public.votes for each row execute function public.lock_vote_identity();
+
+-- Flag counts are recalculated when flags are removed too (e.g. when an account is deleted).
+create or replace function public.refresh_flag_count() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare rid uuid := coalesce(new.report_id, old.report_id);
+begin
+  if tg_op = 'INSERT' then
+    perform pg_advisory_xact_lock(hashtext('flag:' || new.user_id::text));
+    if (select count(*) from public.report_flags where user_id = new.user_id and created_at > now() - interval '1 hour') > 20 then
+      raise exception 'Too many flags in the last hour. Try again later.';
+    end if;
+  end if;
+  update public.reports set flags = (select count(*) from public.report_flags where report_id = rid) where id = rid;
+  return null;
+end $$;
+create or replace trigger report_flags_count after insert or delete on public.report_flags
+  for each row execute function public.refresh_flag_count();
+revoke execute on function public.refresh_flag_count() from public, anon, authenticated;

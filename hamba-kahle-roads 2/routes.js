@@ -191,7 +191,7 @@ window.HKR_ROUTES = [
 },
 /* 5 */ {
   id: "pretoria-polokwane", a: ["pretoria", "joburg"], b: ["polokwane"],
-  title: "Pretoria to Polokwane", route: "N1 North via Bela-Bela, Modimolle and Mokopane", distanceKm: 270, driveTime: "About 3 hours",
+  title: "Pretoria to Polokwane", route: "N1 via Bela-Bela, Modimolle and Mokopane", distanceKm: 270, driveTime: "About 3 hours",
   roads: ["N1"], places: ["Pumulani", "Hammanskraal", "Bela-Bela", "Modimolle", "Mookgophong", "Mokopane"],
   summary: "Freeway most of the way to Modimolle, then single carriageway with four toll plazas in total.",
   before: [
@@ -224,7 +224,7 @@ window.HKR_ROUTES = [
   before: [
     "Have a card or cash ready for toll plazas: Diamond Hill, Middelburg, Machado and Nkomazi.",
     "Check Kruger gate closing times for your month and arrive well before; gates don't wait.",
-    "From Joburg, take the N12 east to join the N4 at eMalahleni.",
+    "Coming from Joburg, the N12 links to the N4 at eMalahleni.",
     "Expect heavy truck traffic all the way to the border."
   ],
   legs: [
@@ -263,7 +263,7 @@ window.HKR_ROUTES = [
   ],
   legs: [
     { name: "Johannesburg to Belfast", items: [
-      { kind: "lane", title: "N12 east to eMalahleni", detail: "From Joburg, take the N12 to join the N4 at eMalahleni." },
+      { kind: "lane", title: "N12 between Joburg and eMalahleni", detail: "The N12 links Joburg to the N4 at eMalahleni." },
       { kind: "toll", title: "Middelburg Toll Plaza", detail: "On the N4 just before Middelburg." },
       { kind: "weather", title: "Mist around Belfast", detail: "Common, especially early morning. Lights on, speed down." }
     ]},
@@ -324,7 +324,7 @@ window.HKR_ROUTES = [
     { name: "Middelburg to Gqeberha", items: [
       { kind: "fuel", title: "Nxuba (Cradock)", detail: "Last big town for fuel and food before the coast." },
       { kind: "hazard", title: "Daggaboers Nek and Olifantskop Pass", detail: "Two passes south of Cradock. Winding with slow trucks; take them in daylight." },
-      { kind: "lane", title: "Joining the N2", detail: "The N10 meets the N2 about 45 km from Gqeberha. Turn west for the city." }
+      { kind: "lane", title: "Where the N10 meets the N2", detail: "The junction is about 45 km from Gqeberha, which lies to the west of it." }
     ]}
   ]
 },
@@ -354,7 +354,7 @@ window.HKR_ROUTES = [
 },
 /* 11 */ {
   id: "durban-ballito", a: ["durban"], b: ["ballito"],
-  title: "Durban to Ballito", route: "N2 North via Umhlanga and King Shaka Airport", distanceKm: 45, driveTime: "35–50 minutes",
+  title: "Durban to Ballito", route: "N2 via Umhlanga and King Shaka Airport", distanceKm: 45, driveTime: "35–50 minutes",
   roads: ["N2", "M4"], places: ["Umhlanga", "Gateway", "Mount Edgecombe", "King Shaka", "oThongathi", "Tongaat", "Ballito"],
   summary: "A short run up the N2, with weekend and holiday traffic as the main headache.",
   before: [
@@ -375,7 +375,7 @@ window.HKR_ROUTES = [
 },
 /* 12 */ {
   id: "durban-southcoast", a: ["durban"], b: ["southcoast"],
-  title: "Durban to Margate (South Coast)", route: "N2 South via Amanzimtoti and Scottburgh, then the R61", distanceKm: 125, driveTime: "About 1½ hours",
+  title: "Durban to Margate (South Coast)", route: "N2 via Amanzimtoti and Scottburgh, then the R61", distanceKm: 125, driveTime: "About 1½ hours",
   roads: ["N2", "R61", "R102"], places: ["Amanzimtoti", "Kingsburgh", "Umkomaas", "Scottburgh", "Hibberdene", "Port Shepstone", "Shelly Beach", "Uvongo", "Margate"],
   summary: "A coastal drive that switches between dual and single carriageway, with heavy holiday traffic.",
   before: [
@@ -865,3 +865,95 @@ window.HKR_ROUTES = [
   ]
 }
 ];
+
+/* Approximate corridors for each guide, used to check that a pinned driver report is actually on this trip.
+   Each path is an ordered list of [lat, lng] waypoints; tol is how far from the line (in km) still counts. */
+window.HKR_ROUTE_PATHS = (() => {
+  const P = {
+    joburg: [-26.204, 28.047], pretoria: [-25.746, 28.188], durban: [-29.858, 31.021], capetown: [-33.925, 18.424],
+    pinetown: [-29.817, 30.857], pmb: [-29.601, 30.379], howick: [-29.477, 30.231], mooi: [-29.211, 29.994],
+    estcourt: [-29.008, 29.871], ladysmith: [-28.560, 29.781], vanreenen: [-28.371, 29.384], harrismith: [-28.273, 29.127],
+    villiers: [-27.031, 28.600], heidelberg: [-26.504, 28.358], grasmere: [-26.43, 27.88], parys: [-26.90, 27.45],
+    kroonstad: [-27.65, 27.23], ventersburg: [-28.08, 27.14], winburg: [-28.52, 27.01], brandfort: [-28.70, 26.46],
+    bloem: [-29.118, 26.214], colesberg: [-30.72, 25.10], hanover: [-31.07, 24.44], richmond: [-31.42, 23.94],
+    threesisters: [-31.85, 23.10], beaufortwest: [-32.357, 22.583], laingsburg: [-33.20, 20.86], touwsriver: [-33.34, 20.03],
+    dedoorns: [-33.48, 19.67], worcester: [-33.646, 19.448], paarl: [-33.734, 18.962],
+    centurion: [-25.86, 28.19], midrand: [-25.99, 28.13], sandton: [-26.107, 28.057],
+    hammanskraal: [-25.40, 28.28], belabela: [-24.88, 28.29], modimolle: [-24.70, 28.41], mookgophong: [-24.52, 28.71],
+    mokopane: [-24.19, 29.01], polokwane: [-23.904, 29.469],
+    bronkhorstspruit: [-25.81, 28.74], emalahleni: [-25.871, 29.233], middelburg: [-25.775, 29.464], belfast: [-25.69, 30.03],
+    machadodorp: [-25.67, 30.25], watervalboven: [-25.65, 30.33], ngodwana: [-25.58, 30.67], mbombela: [-25.475, 30.97],
+    kaapmuiden: [-25.53, 31.31], malelane: [-25.48, 31.51],
+    dullstroom: [-25.42, 30.11], lydenburg: [-25.10, 30.45], sabie: [-25.10, 30.78], graskop: [-24.93, 30.84],
+    lanseria: [-25.94, 27.93], hartbeespoort: [-25.74, 27.85], brits: [-25.63, 27.78], rustenburg: [-25.667, 27.242], suncity: [-25.335, 27.093],
+    noupoort: [-31.19, 24.95], middelburgec: [-31.49, 25.01], cradock: [-32.17, 25.62], cookhouse: [-32.74, 25.81],
+    paterson: [-33.43, 25.97], gqeberha: [-33.96, 25.60],
+    winterton: [-28.81, 29.53], bergville: [-28.73, 29.35], champagne: [-28.99, 29.37],
+    umhlanga: [-29.726, 31.085], kingshaka: [-29.61, 31.12], tongaat: [-29.57, 31.12], ballito: [-29.539, 31.214],
+    amanzimtoti: [-30.05, 30.88], umkomaas: [-30.20, 30.80], scottburgh: [-30.29, 30.75], hibberdene: [-30.58, 30.57],
+    portshepstone: [-30.74, 30.45], margate: [-30.86, 30.37],
+    harding: [-30.58, 29.88], kokstad: [-30.55, 29.42], mountayliff: [-30.81, 29.37], mountfrere: [-30.91, 28.98],
+    qumbu: [-31.16, 28.87], mthatha: [-31.589, 28.784], dutywa: [-32.10, 28.31], butterworth: [-32.33, 28.15], eastlondon: [-33.015, 27.912],
+    colchester: [-33.69, 25.82], makhanda: [-33.31, 26.53], peddie: [-33.20, 27.12], qonce: [-32.88, 27.40], berlin: [-32.89, 27.58],
+    somersetwest: [-34.08, 18.85], sirlowrys: [-34.15, 18.93], caledon: [-34.23, 19.43], riviersonderend: [-34.15, 19.91],
+    swellendam: [-34.02, 20.44], riversdale: [-34.09, 21.26], mosselbay: [-34.18, 22.13], george: [-33.963, 22.462],
+    wilderness: [-33.99, 22.58], sedgefield: [-34.02, 22.80], knysna: [-34.036, 23.048], plett: [-34.05, 23.37],
+    stormsriver: [-33.97, 23.88], humansdorp: [-34.03, 24.77], jbay: [-34.05, 24.92],
+    gordonsbay: [-34.16, 18.87], kleinmond: [-34.34, 19.03], grabouw: [-34.15, 19.02], houwhoek: [-34.21, 19.15],
+    botrivier: [-34.23, 19.21], hermanus: [-34.418, 19.235],
+    bellville: [-33.90, 18.63], kuilsriver: [-33.92, 18.68], stellenbosch: [-33.934, 18.861], ctairport: [-33.97, 18.60],
+    polkadraai: [-33.96, 18.75], hospitalbend: [-33.95, 18.47], woodstock: [-33.93, 18.45],
+    milnerton: [-33.87, 18.50], tableview: [-33.82, 18.49], melkbos: [-33.72, 18.44], yzerfontein: [-33.34, 18.16],
+    langebaan: [-33.09, 18.03], vredenburg: [-32.91, 17.99],
+    soweto: [-26.25, 27.86], nasrec: [-26.23, 27.98], booysens: [-26.23, 28.02], jhbcbd: [-26.204, 28.047],
+    braamfontein: [-26.19, 28.03], westernbypass: [-26.13, 27.95], rivonia: [-26.06, 28.06],
+    benoni: [-26.19, 28.32], boksburg: [-26.21, 28.26], germiston: [-26.22, 28.17], bedfordview: [-26.18, 28.13],
+    kempton: [-26.10, 28.23], edenvale: [-26.14, 28.15], gillooly: [-26.16, 28.11],
+    krugersdorp: [-26.10, 27.77], roodepoort: [-26.16, 27.87], florida: [-26.17, 27.91], constantiakloof: [-26.13, 27.91],
+    randburg: [-26.09, 27.97], muldersdrift: [-26.04, 27.85],
+    irene: [-25.88, 28.22], lyttelton: [-25.84, 28.20], fountains: [-25.77, 28.20], ptacbd: [-25.746, 28.188],
+    umlazi: [-29.97, 30.88], isipingo: [-29.99, 30.93], prospecton: [-29.97, 30.94], mobeni: [-29.94, 30.96], dbncbd: [-29.858, 31.021],
+    westville: [-29.83, 30.93], ebcloete: [-29.84, 30.96], mayville: [-29.84, 30.99],
+    durbannorth: [-29.79, 31.04], virginia: [-29.77, 31.06], mabhida: [-29.83, 31.03],
+    camperdown: [-29.73, 30.53], catoridge: [-29.74, 30.59], hammarsdale: [-29.79, 30.66], mariannhill: [-29.84, 30.83],
+    tygervalley: [-33.875, 18.63], plattekloof: [-33.87, 18.57], goodwood: [-33.91, 18.55], paarden: [-33.91, 18.47],
+    tokai: [-34.06, 18.45], constantia: [-34.02, 18.45], wynberg: [-34.00, 18.47], newlands: [-33.97, 18.46], rondebosch: [-33.96, 18.47],
+    khayelitsha: [-34.04, 18.67], mitchellsplain: [-34.05, 18.62], langa: [-33.94, 18.53]
+  };
+  const path = (...k) => k.map(x => { if (!P[x]) throw new Error("No coordinates for " + x); return P[x]; });
+  const LONG = 25, SUBURB = 6;
+  return {
+    "durban-joburg": { tol: LONG, paths: [path("durban", "pinetown", "pmb", "howick", "mooi", "estcourt", "ladysmith", "vanreenen", "harrismith", "villiers", "heidelberg", "joburg", "pretoria")] },
+    "joburg-capetown": { tol: LONG, paths: [path("pretoria", "joburg", "grasmere", "parys", "kroonstad", "winburg", "bloem", "colesberg", "hanover", "richmond", "threesisters", "beaufortwest", "laingsburg", "touwsriver", "dedoorns", "worcester", "paarl", "capetown")] },
+    "joburg-bloem": { tol: LONG, paths: [path("pretoria", "joburg", "grasmere", "parys", "kroonstad", "ventersburg", "winburg", "brandfort", "bloem")] },
+    "pretoria-joburg": { tol: 8, paths: [path("pretoria", "centurion", "midrand", "sandton", "joburg")] },
+    "pretoria-polokwane": { tol: LONG, paths: [path("joburg", "pretoria", "hammanskraal", "belabela", "modimolle", "mookgophong", "mokopane", "polokwane")] },
+    "pretoria-kruger": { tol: LONG, paths: [path("joburg", "pretoria", "bronkhorstspruit", "emalahleni", "middelburg", "belfast", "machadodorp", "watervalboven", "ngodwana", "mbombela", "kaapmuiden", "malelane")] },
+    "joburg-panorama": { tol: LONG, paths: [path("joburg", "emalahleni", "middelburg", "belfast", "dullstroom", "lydenburg", "sabie", "graskop"), path("pretoria", "bronkhorstspruit", "emalahleni")] },
+    "joburg-suncity": { tol: 15, paths: [path("joburg", "lanseria", "hartbeespoort", "brits", "rustenburg", "suncity"), path("pretoria", "hartbeespoort")] },
+    "joburg-gqeberha": { tol: LONG, paths: [path("pretoria", "joburg", "grasmere", "parys", "kroonstad", "winburg", "bloem", "colesberg", "noupoort", "middelburgec", "cradock", "cookhouse", "paterson", "gqeberha")] },
+    "durban-drakensberg": { tol: 15, paths: [path("durban", "pinetown", "pmb", "howick", "mooi", "estcourt", "winterton", "bergville"), path("winterton", "champagne")] },
+    "durban-ballito": { tol: SUBURB, paths: [path("dbncbd", "durbannorth", "umhlanga", "kingshaka", "tongaat", "ballito")] },
+    "durban-southcoast": { tol: 10, paths: [path("dbncbd", "amanzimtoti", "umkomaas", "scottburgh", "hibberdene", "portshepstone", "margate")] },
+    "durban-eastlondon": { tol: LONG, paths: [path("durban", "amanzimtoti", "scottburgh", "portshepstone", "harding", "kokstad", "mountayliff", "mountfrere", "qumbu", "mthatha", "dutywa", "butterworth", "eastlondon")] },
+    "gqeberha-eastlondon": { tol: LONG, paths: [path("gqeberha", "colchester", "makhanda", "peddie", "qonce", "berlin", "eastlondon")] },
+    "capetown-gqeberha": { tol: LONG, paths: [path("capetown", "somersetwest", "sirlowrys", "caledon", "riviersonderend", "swellendam", "riversdale", "mosselbay", "george", "wilderness", "sedgefield", "knysna", "plett", "stormsriver", "humansdorp", "jbay", "gqeberha")] },
+    "capetown-gardenroute": { tol: LONG, paths: [path("capetown", "somersetwest", "sirlowrys", "caledon", "riviersonderend", "swellendam", "riversdale", "mosselbay", "george", "wilderness", "sedgefield", "knysna")] },
+    "capetown-hermanus": { tol: 10, paths: [path("capetown", "somersetwest", "sirlowrys", "grabouw", "houwhoek", "botrivier", "hermanus"), path("somersetwest", "gordonsbay", "kleinmond", "hermanus")] },
+    "capetown-stellenbosch": { tol: SUBURB, paths: [path("capetown", "bellville", "kuilsriver", "stellenbosch"), path("ctairport", "polkadraai", "stellenbosch"), path("capetown", "ctairport", "somersetwest", "stellenbosch")] },
+    "ctairport-capetown": { tol: 4, paths: [path("ctairport", "hospitalbend", "woodstock", "capetown")] },
+    "capetown-langebaan": { tol: 10, paths: [path("capetown", "milnerton", "tableview", "melkbos", "yzerfontein", "langebaan", "vredenburg")] },
+    "soweto-joburg": { tol: SUBURB, paths: [path("soweto", "nasrec", "booysens", "jhbcbd", "braamfontein", "sandton"), path("soweto", "westernbypass", "randburg", "rivonia", "sandton")] },
+    "eastrand-joburg": { tol: SUBURB, paths: [path("benoni", "boksburg", "germiston", "bedfordview", "jhbcbd"), path("kempton", "edenvale", "gillooly", "sandton"), path("boksburg", "bedfordview", "gillooly")] },
+    "westrand-sandton": { tol: SUBURB, paths: [path("krugersdorp", "roodepoort", "florida", "constantiakloof", "randburg", "sandton"), path("krugersdorp", "muldersdrift", "westernbypass", "rivonia", "sandton")] },
+    "centurion-ptacbd": { tol: 4, paths: [path("centurion", "irene", "lyttelton", "fountains", "ptacbd"), path("centurion", "lyttelton", "ptacbd")] },
+    "umlazi-dbncbd": { tol: 4, paths: [path("umlazi", "isipingo", "prospecton", "mobeni", "dbncbd")] },
+    "pinetown-dbncbd": { tol: 4, paths: [path("pinetown", "westville", "ebcloete", "mayville", "dbncbd")] },
+    "umhlanga-dbncbd": { tol: 4, paths: [path("umhlanga", "virginia", "durbannorth", "mabhida", "dbncbd")] },
+    "pmb-durban": { tol: SUBURB, paths: [path("pmb", "camperdown", "catoridge", "hammarsdale", "mariannhill", "pinetown", "westville", "ebcloete", "dbncbd")] },
+    "bellville-capetown": { tol: 4, paths: [path("bellville", "tygervalley", "plattekloof", "goodwood", "paarden", "capetown")] },
+    "southern-capetown": { tol: 4, paths: [path("tokai", "constantia", "wynberg", "newlands", "rondebosch", "hospitalbend", "capetown")] },
+    "khayelitsha-capetown": { tol: 5, paths: [path("khayelitsha", "mitchellsplain", "ctairport", "langa", "hospitalbend", "capetown")] },
+    "tableview-capetown": { tol: 4, paths: [path("tableview", "milnerton", "paarden", "capetown")] }
+  };
+})();

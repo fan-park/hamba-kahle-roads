@@ -72,7 +72,7 @@ async function roadAt(pos) {
 }
 
 /* ---------- State ---------- */
-const state = { reports: [], myVotes: new Map(), myReports: new Set(), myFlags: new Set(), user: null, q: "", ageDays: 3, near: null, loaded: false };
+const state = { reports: [], myVotes: new Map(), myReports: new Set(), myFlags: new Set(), guide: null, loadError: false, user: null, q: "", ageDays: 3, near: null, loaded: false };
 const form = { type: "pothole", lane: "", sev: "slow", trip: "" };
 // Public report fields. The poster's user ID is deliberately not shown to anyone.
 const REPORT_COLUMNS = "id,created_at,author_name,road,direction,location_note,type,severity,lane,trip,note,lat,lng,quick,confirms,cleared";
@@ -122,8 +122,15 @@ function renderAccount() {
 // Sign out on this device only. If the session was already ended elsewhere (e.g. signed out
 // on another device), the server says "session not found" — clear it locally anyway.
 async function signOutHere() {
-  const { error } = await sb.auth.signOut({ scope: "local" });
-  if (error) { try { await sb.auth.signOut({ scope: "local" }); } catch (_) {} }
+  let res = await sb.auth.signOut({ scope: "local" }).catch(e => ({ error: e }));
+  if (res && res.error) res = await sb.auth.signOut({ scope: "local" }).catch(e => ({ error: e }));
+  if (res && res.error) {
+    // Couldn't reach the server: remove the saved sign-in from this device ourselves, then reload.
+    try { Object.keys(localStorage).filter(k => /^sb-.+-auth-token/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (_) {}
+    try { sessionStorage.setItem("hkr-signed-out", "1"); } catch (_) {}
+    location.reload();
+    return;
+  }
   state.user = null;
   renderAccount();
   loadMyVotes();
@@ -219,17 +226,21 @@ $("form").addEventListener("submit", async e => {
   if (!road) { showMsg("Add the road name so other drivers can find this report.", "err"); return; }
   if (!requireSignIn()) return;
   const btn = $("f-submit"); btn.disabled = true;
+  // Take a snapshot now, so edits made while the location is found don't mix into this report.
+  const snap = {
+    road: road.slice(0, 40), direction: $("f-dir").value, location_note: $("f-where").value.trim().slice(0, 90),
+    note: $("f-note").value.trim().slice(0, 400), type: form.type, lane: form.lane, severity: form.sev, trip: form.trip
+  };
+  const wantGeo = $("f-geo").checked;
+  const sentWhere = $("f-where").value, sentNote = $("f-note").value;
   try {
-    const pos = $("f-geo").checked ? await getPosition() : null;
-    if ($("f-geo").checked && !pos) showMsg("Couldn't get your location, so the report is posted without a pin.", "");
-    await insertReport({
-      road: road.slice(0, 40), direction: $("f-dir").value, location_note: $("f-where").value.trim().slice(0, 90),
-      note: $("f-note").value.trim().slice(0, 400), type: form.type, lane: form.lane, severity: form.sev, trip: form.trip,
-      lat: pos ? pos.lat : null, lng: pos ? pos.lng : null
-    });
+    const pos = wantGeo ? await getPosition() : null;
+    if (wantGeo && !pos) showMsg("Couldn't get your location, so the report is posted without a pin.", "");
+    await insertReport({ ...snap, lat: pos ? pos.lat : null, lng: pos ? pos.lng : null });
     showMsg("Posted. Thanks for looking out for the next driver.", "ok");
-    ["f-where", "f-note"].forEach(id => $(id).value = "");
-    form.trip = ""; seg("f-trip", TRIPS, "trip", true);
+    if ($("f-where").value === sentWhere) $("f-where").value = "";
+    if ($("f-note").value === sentNote) $("f-note").value = "";
+    if (form.trip === snap.trip) { form.trip = ""; seg("f-trip", TRIPS, "trip", true); }
     loadReports();
   } catch (err) {
     showMsg(friendlyError(err), "err");
@@ -268,9 +279,9 @@ $("qk-locate").onclick = async () => {
 async function quickReport(type, btn) {
   if (!requireSignIn()) return;
   btn.disabled = true;
+  let raw = qkRoad.value.trim();
   try {
     const pos = await getPosition(6000);
-    let raw = qkRoad.value.trim();
     if (!raw && pos) { raw = await roadAt(pos); if (raw) qkRoad.value = raw; }
     if (!raw) { qkRoad.focus(); toast("Type the road you're on first, e.g. N3 Northbound."); return; }
     store.set("hkr-road", raw);
@@ -323,8 +334,9 @@ function renderMap(list) {
 function visible() {
   const cutoff = Date.now() - state.ageDays * 86400000;
   const q = norm(state.q);
+  const tokens = q ? q.split(" ").filter(Boolean) : [];
   return state.reports.filter(r => !state.myFlags.has(r.id) && (r.example || r.createdAt >= cutoff) &&
-    (!q || norm([r.road, r.where, r.note, r.dir].join(" ")).includes(q)) &&
+    (!tokens.length || (text => tokens.every(t => text.includes(t)))(norm([r.road, r.dir, r.where, r.note].join(" ")))) &&
     (!state.near || (typeof r.lat === "number" && km(state.near, r) <= 30)));
 }
 
@@ -332,6 +344,11 @@ function renderCheck(list) {
   const el = $("check");
   const where = state.near ? "Within 30 km of you" : state.q ? esc(state.q) : "All roads";
   const real = list.filter(r => !r.example);
+  if (state.loadError && !state.reports.some(r => !r.example)) {
+    el.innerHTML = `<div><div class="eyebrow">Drive check</div><h2>${where}</h2></div>
+      <p class="note" style="color:var(--asphalt-muted)">Couldn't load driver reports just now, so we can't say what's on the road. Check your signal and try again.</p>`;
+    return;
+  }
   if (!real.length) {
     el.innerHTML = `<div><div class="eyebrow">Drive check</div><h2>${where}</h2></div>
       <p class="note" style="color:var(--asphalt-muted)">No reports in this window. That doesn't mean the road is clear, only that nobody has reported anything yet. If you've driven it recently, add what you saw so the next driver knows.</p>
@@ -395,11 +412,17 @@ function render() {
   const list = visible();
   renderCheck(list);
   renderMap(list);
+  refreshGuideLive();
   $("feed-title").textContent = state.near ? "Reports near you" : state.q ? "Reports matching " + state.q : "Latest from the road";
   const realCount = list.filter(r => !r.example).length;
   $("feed-count").textContent = realCount ? realCount + " report" + (realCount === 1 ? "" : "s") : "";
   const feed = $("feed");
   if (realCount) { feed.innerHTML = list.map(card).join(""); return; }
+  if (state.loadError && !state.reports.some(r => !r.example)) {
+    feed.innerHTML = `<div class="empty"><p class="note" style="color:var(--ink)">Couldn't load reports just now. This doesn't mean the roads are clear. Check your signal and try again.</p><div><button class="btn small" type="button" id="feed-retry">Try again</button></div></div>`;
+    $("feed-retry").onclick = () => { feed.innerHTML = `<div class="empty"><p class="note">Loading reports…</p></div>`; loadReports(); };
+    return;
+  }
   const why = !state.loaded ? "Loading reports…" :
     state.reports.some(r => !r.example) ? "Nothing matches in this time window. Try a wider window or a shorter search." :
     "No reports yet. Be the first: tap a quick report next time you're on the road. This is what a report looks like:";
@@ -451,29 +474,47 @@ $("age-chips").addEventListener("click", async e => {
 });
 
 /* ---------- Data loading ---------- */
-let loadTimer = null;
+let loadTimer = null, loadSeq = 0;
 async function loadReports() {
   if (!CONNECTED) return;
+  const seq = ++loadSeq;
   const since = new Date(Date.now() - 14 * 86400000).toISOString();
-  const { data, error } = await sb.from("reports").select(REPORT_COLUMNS).gte("created_at", since).order("created_at", { ascending: false }).limit(500);
-  if (!error) state.reports = data.map(fromRow);
+  let res;
+  try { res = await sb.from("reports").select(REPORT_COLUMNS).gte("created_at", since).order("created_at", { ascending: false }).limit(500); }
+  catch (e) { res = { data: null, error: e }; }
+  if (seq !== loadSeq) return; // a newer load has started; ignore this older answer
+  if (res.error || !res.data) { state.loadError = true; }
+  else {
+    state.loadError = false;
+    const rows = res.data.map(fromRow);
+    // Keep a report opened from a shared link even if it's older than the newest 500.
+    if (state.extraReport && !rows.some(r => r.id === state.extraReport.id)) rows.push(state.extraReport);
+    state.reports = rows;
+  }
   state.loaded = true;
   render();
   if (state.pendingReport) focusPendingReport();
 }
+let voteGen = 0;
 async function loadMyVotes() {
+  const gen = ++voteGen;
   state.myVotes = new Map();
   state.myReports = new Set();
   state.myFlags = new Set();
   if (!CONNECTED || !state.user) { render(); return; }
+  const uid = state.user.id;
   const [votes, mine, flags] = await Promise.all([
-    sb.from("votes").select("report_id, vote").eq("user_id", state.user.id),
+    sb.from("votes").select("report_id, vote").eq("user_id", uid),
     sb.rpc("my_report_ids"),
-    sb.from("report_flags").select("report_id").eq("user_id", state.user.id)
+    sb.from("report_flags").select("report_id").eq("user_id", uid)
   ]);
-  (votes.data || []).forEach(v => state.myVotes.set(v.report_id, v.vote));
-  (flags.data || []).forEach(f => state.myFlags.add(f.report_id));
-  (mine.data || []).forEach(row => state.myReports.add(typeof row === "string" ? row : (row.my_report_ids || row.id)));
+  // Ignore answers for an account that has since signed out or changed.
+  if (gen !== voteGen || !state.user || state.user.id !== uid) return;
+  const v2 = new Map(), m2 = new Set(), f2 = new Set();
+  (votes.data || []).forEach(v => v2.set(v.report_id, v.vote));
+  (flags.data || []).forEach(f => f2.add(f.report_id));
+  (mine.data || []).forEach(row => m2.add(typeof row === "string" ? row : (row.my_report_ids || row.id)));
+  state.myVotes = v2; state.myReports = m2; state.myFlags = f2;
   render();
 }
 
@@ -527,19 +568,47 @@ function swapLegName(name) {
 function orient(route, reversed) {
   if (!reversed) return route;
   return { ...route, title: swapLegName(route.title),
+    // Guides are written one way; say so, so exits and lane tips aren't taken literally on the return trip.
+    reverseNote: "This guide was written for " + route.title + ". The same roads apply on your trip, but read exits, merges and lane tips the other way round.",
     legs: route.legs.slice().reverse().map(l => ({ name: swapLegName(l.name), items: l.items.slice().reverse() })) };
 }
 
+/* Distance in km from a point to a polyline of [lat, lng] waypoints (flat-earth approximation, fine at these scales). */
+const ROUTE_PATHS = window.HKR_ROUTE_PATHS || {};
+function kmToPath(pt, path) {
+  const kx = 111.32 * Math.cos(pt.lat * Math.PI / 180), ky = 110.57;
+  let best = Infinity;
+  for (let i = 0; i < path.length - 1; i++) {
+    const ax = (path[i][1] - pt.lng) * kx, ay = (path[i][0] - pt.lat) * ky;
+    const bx = (path[i + 1][1] - pt.lng) * kx, by = (path[i + 1][0] - pt.lat) * ky;
+    const dx = bx - ax, dy = by - ay, len2 = dx * dx + dy * dy;
+    const t = len2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len2)) : 0;
+    best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy));
+  }
+  return best;
+}
+/* Recent driver reports that belong to this trip. Pinned reports must lie along the route's corridor;
+   unpinned ones that only match a road number are marked so the guide can say they may be elsewhere. */
 function reportsOnRoute(route) {
   const cutoff = Date.now() - 3 * 86400000;
   const roads = route.roads.map(r => norm(r));
   const places = route.places.map(p => norm(p));
-  return state.reports.filter(r => !r.example && r.createdAt >= cutoff && !(r.cleared > r.confirms)).filter(r => {
+  const corridor = route.id ? ROUTE_PATHS[route.id] : null;
+  const out = [];
+  state.reports.forEach(r => {
+    if (r.example || r.createdAt < cutoff || r.cleared > r.confirms || state.myFlags.has(r.id)) return;
     const road = norm(r.road);
-    if (roads.some(x => road === x || road.startsWith(x + " "))) return true;
-    const text = norm([r.road, r.where, r.note].join(" "));
-    return places.some(p => text.includes(p));
-  }).slice(0, 10);
+    const roadHit = roads.some(x => road === x || road.startsWith(x + " "));
+    const text = " " + norm([r.road, r.where, r.note].join(" ")) + " ";
+    const placeHit = places.some(p => text.includes(" " + p + " ") || text.includes(" " + p));
+    if (!roadHit && !placeHit) return;
+    if (typeof r.lat === "number" && typeof r.lng === "number" && corridor) {
+      if (corridor.paths.some(path => kmToPath(r, path) <= corridor.tol)) out.push({ r, unpinned: false });
+      return;
+    }
+    out.push({ r, unpinned: !placeHit });
+  });
+  return out;
 }
 
 /* Planner controls */
@@ -559,8 +628,12 @@ sel.addEventListener("change", () => { const r = ROUTES.find(x => x.id === sel.v
 $("planner").addEventListener("submit", e => { e.preventDefault(); getBriefing(false); });
 
 function openGuide(route, reversed, keepInputs) {
+  if (briefCtl) { briefCtl.abort(); briefCtl = null; }
   const g = orient(route, reversed);
-  if (!keepInputs) { const [a, b] = g.title.split(" to "); $("p-from").value = a; $("p-to").value = b || ""; }
+  if (!keepInputs) {
+    const a = placeLabel(route.a[0]), b = placeLabel(route.b[0]);
+    $("p-from").value = reversed ? b : a; $("p-to").value = reversed ? a : b;
+  }
   briefBand.hidden = false;
   g.shareHash = guideHash(route, reversed);
   renderGuide(g, route);
@@ -610,13 +683,38 @@ function itemHtml(it, src) {
   </div>`;
 }
 
-function renderGuide(g, original) {
-  const live = reportsOnRoute(original);
-  const liveItems = live.map(r => ({
+const GUIDE_SHOW = 10;
+function guideCountText(live) {
+  if (state.loadError && !state.reports.some(r => !r.example)) return `Driver reports <b>unavailable</b>`;
+  return `<b>${live.length}</b> driver report${live.length === 1 ? "" : "s"} in the last 3 days`;
+}
+function guideLiveHtml(live) {
+  if (state.loadError && !state.reports.some(r => !r.example)) {
+    return `<h3>From drivers, last 3 days</h3><p class="note">Couldn't load driver reports just now, so we can't say what's on these roads. Check your signal and try again.</p>`;
+  }
+  if (!state.loaded && CONNECTED) return `<h3>From drivers, last 3 days</h3><p class="note">Loading driver reports…</p>`;
+  const items = live.slice(0, GUIDE_SHOW).map(({ r, unpinned }) => ({
     kind: REPORT_KIND[r.type] || "hazard",
     title: `${label(TYPES, r.type)} on ${r.road}${r.dir ? " " + r.dir : ""}`,
-    detail: [r.where, r.note, r.lane ? label(LANES, r.lane) : "", "reported " + ago(r.createdAt)].filter(Boolean).join(" · ")
+    detail: [r.where, r.note, r.lane ? label(LANES, r.lane) : "", "reported " + ago(r.createdAt),
+      unpinned ? "no location pinned, so it may be elsewhere on the " + r.road : ""].filter(Boolean).join(" · ")
   }));
+  return `<h3>From drivers, last 3 days</h3>
+    ${items.length ? `<div class="items">${items.map(it => itemHtml(it, "drivers")).join("")}</div>
+      ${live.length > GUIDE_SHOW ? `<p class="note">Showing the newest ${GUIDE_SHOW} of ${live.length}. Search the road below to see them all.</p>` : ""}`
+      : `<p class="note">No driver reports on these roads in the last 3 days. That doesn't mean there are no hazards, only that nobody has reported any. Driven it recently? Add a quick report below so the next driver knows.</p>`}`;
+}
+/* Keep an open guide's driver section in step with the latest reports, votes and flags. */
+function refreshGuideLive() {
+  if (!state.guide || briefBand.hidden) return;
+  const live = reportsOnRoute(state.guide.original);
+  const box = $("g-live"), count = $("g-live-count");
+  if (box) box.innerHTML = guideLiveHtml(live);
+  if (count) count.innerHTML = guideCountText(live);
+}
+function renderGuide(g, original) {
+  state.guide = { original };
+  const live = reportsOnRoute(original);
   briefBody.innerHTML = `
     <div class="brief-head">
       <div style="display:grid;gap:6px;min-width:0">
@@ -626,7 +724,7 @@ function renderGuide(g, original) {
           ${g.route ? `<span>Route <b>${esc(g.route)}</b></span>` : ""}
           ${g.distanceKm ? `<span>About <b>${esc(Math.round(g.distanceKm).toLocaleString("en-ZA"))} km</b></span>` : ""}
           ${g.driveTime ? `<span>Drive <b>${esc(g.driveTime)}</b></span>` : ""}
-          <span><b>${live.length}</b> driver report${live.length === 1 ? "" : "s"} in the last 3 days</span>
+          <span id="g-live-count">${guideCountText(live)}</span>
         </div>
       </div>
       <div class="share-row">
@@ -638,11 +736,8 @@ function renderGuide(g, original) {
       ${g.roads.slice(0, 4).map(r => `<button class="chip" type="button" data-road="${esc(r)}">See ${esc(r)} reports</button>`).join("")}
     </div>
     ${g.summary ? `<p style="margin:0;max-width:70ch">${esc(g.summary)}</p>` : ""}
-    <div class="live">
-      <h3>From drivers, last 3 days</h3>
-      ${liveItems.length ? `<div class="items">${liveItems.map(it => itemHtml(it, "drivers")).join("")}</div>`
-        : `<p class="note">No driver reports on these roads in the last 3 days. That doesn't mean there are no hazards, only that nobody has reported any. Driven it recently? Add a quick report below so the next driver knows.</p>`}
-    </div>
+    ${g.reverseNote ? `<p class="note reverse-note">${esc(g.reverseNote)}</p>` : ""}
+    <div class="live" id="g-live">${guideLiveHtml(live)}</div>
     <div class="brief-grid">
       <div class="before">
         <h3>Before you leave</h3>
@@ -662,6 +757,7 @@ function renderGuide(g, original) {
 }
 
 function renderNoGuide(from, to) {
+  state.guide = null;
   briefBody.innerHTML = `
     <div><div class="eyebrow">Route guide</div><h2>${esc(from)} → ${esc(to)}</h2></div>
     <p style="margin:0;max-width:62ch">We don't have a guide for this trip yet. You can search driver reports by road name (like N3 or R61) below, or pick one of our guides:</p>
@@ -669,29 +765,32 @@ function renderNoGuide(from, to) {
   briefBody.querySelectorAll("[data-guide]").forEach(b => b.onclick = () => openGuide(ROUTES.find(r => r.id === b.dataset.guide), false));
 }
 
-/* Optional: AI briefings for trips without a guide (needs api/briefing.js and AI_BRIEFINGS: true in config.js) */
+/* Optional: AI briefings for trips without a guide (switched off; needs a server endpoint that isn't included yet) */
 async function aiBriefing(from, to, refresh) {
   if (briefCtl) briefCtl.abort();
-  briefCtl = new AbortController();
+  const ctl = briefCtl = new AbortController();
+  state.guide = null;
   briefBody.innerHTML = `<div class="brief-head"><div><div class="eyebrow">Trip briefing</div><h2>${esc(from)} → ${esc(to)}</h2></div>
     <button class="btn ghost" id="b-stop" type="button">Stop</button></div>
     <div class="thinking"><span class="dashes"></span>We don't have a written guide for this trip, so we're building one. This can take up to half a minute.</div>`;
-  $("b-stop").onclick = () => briefCtl && briefCtl.abort();
+  $("b-stop").onclick = () => ctl.abort();
   try {
     const res = await fetch(CFG.BRIEFING_ENDPOINT || "/api/briefing", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to, refresh: !!refresh }), signal: briefCtl.signal
+      body: JSON.stringify({ from, to, refresh: !!refresh }), signal: ctl.signal
     });
     const body = await res.json().catch(() => ({}));
+    if (briefCtl !== ctl) return; // the driver has moved on to another trip
     if (!res.ok) throw { status: res.status, message: body.error };
     const d = body.data || {};
     renderGuide({ title: from + " to " + to, route: d.route || "", distanceKm: d.distanceKm || 0, driveTime: d.driveTime || "",
       roads: d.roads || [], summary: d.summary || "", before: d.before || [], legs: (d.legs || []).filter(l => l && Array.isArray(l.items)) },
       { roads: d.roads || [], places: [] });
   } catch (e) {
+    if (briefCtl !== ctl) return;
     if (e && e.name === "AbortError") { briefBody.innerHTML = `<p class="note">Stopped.</p>`; return; }
     renderNoGuide(from, to);
-  }
+  } finally { if (briefCtl === ctl) briefCtl = null; }
 }
 
 /* ---------- Feedback ---------- */
@@ -761,16 +860,18 @@ $("flag-form").addEventListener("submit", async e => {
   e.preventDefault();
   if (!flagTarget || !state.user) return;
   const msg = $("flag-msg");
+  const target = flagTarget; // the report this request is about, even if the dialog changes meanwhile
   $("flag-send").disabled = true;
-  const { error } = await sb.from("report_flags").insert({ report_id: flagTarget, user_id: state.user.id, reason: flagReason });
+  const { error } = await sb.from("report_flags").insert({ report_id: target, user_id: state.user.id, reason: flagReason });
   $("flag-send").disabled = false;
+  const stillOpen = flagTarget === target && $("flag").open;
   if (error && error.code !== "23505") {
     msg.textContent = /Too many/.test(error.message || "") ? "You've flagged a lot in the last hour. Try again later." : "Couldn't send just now. Check your signal and try again.";
-    msg.className = "msg err"; msg.hidden = false; return;
+    if (stillOpen) { msg.className = "msg err"; msg.hidden = false; } else toast(msg.textContent);
+    return;
   }
-  state.myFlags.add(flagTarget);
-  flagTarget = null;
-  $("flag").close();
+  state.myFlags.add(target);
+  if (stillOpen) { flagTarget = null; $("flag").close(); }
   render();
   toast("Thanks. It's hidden for you, and we'll take a look.");
 });
@@ -837,7 +938,7 @@ function suggestFor(input, which) {
     else if (q.length >= 3 && t.includes(q)) score = 1;
     if (score < 0) return;
     if (s.main) score += 0.5;
-    const guide = guided.has(s.key) || (PARENT[s.key] && guided.has(PARENT[s.key]));
+    const guide = !!otherKey && s.key !== otherKey && !!findGuideKeys(otherKey, s.key);
     if (guide) score += 2;
     scored.push({ ...s, guide, score });
   });
@@ -900,7 +1001,20 @@ function focusPendingReport() {
   const id = state.pendingReport;
   if (!id || !state.loaded) return;
   const r = state.reports.find(x => x.id === id);
-  if (!r) { if (CONNECTED && state.reports.length) { toast("That report has expired or was removed."); state.pendingReport = null; } return; }
+  if (!r) {
+    if (!CONNECTED || state.loadError) return;
+    if (state.fetchingShared === id) return;
+    state.fetchingShared = id;
+    sb.from("reports").select(REPORT_COLUMNS).eq("id", id).maybeSingle().then(({ data }) => {
+      state.fetchingShared = null;
+      if (state.pendingReport !== id) return;
+      if (!data || Date.parse(data.created_at) < Date.now() - 14 * 86400000) { toast("That report has expired or was removed."); state.pendingReport = null; return; }
+      state.extraReport = fromRow(data);
+      if (!state.reports.some(x => x.id === id)) state.reports.push(state.extraReport);
+      focusPendingReport();
+    });
+    return;
+  }
   state.pendingReport = null;
   state.q = ""; $("q").value = ""; state.near = null;
   state.ageDays = 14;
@@ -950,6 +1064,10 @@ if (!CONNECTED) {
     .on("postgres_changes", { event: "*", schema: "public", table: "reports" }, () => { clearTimeout(loadTimer); loadTimer = setTimeout(loadReports, 800); })
     .subscribe();
   setInterval(render, 60000);
+  // Re-fetch every two minutes (and when the tab comes back) so hidden or changed reports don't linger.
+  setInterval(() => { if (!document.hidden) loadReports(); }, 120000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) loadReports(); });
 }
 if (/^#(g|r)-/.test(location.hash)) handleHash();
+try { if (sessionStorage.getItem("hkr-signed-out")) { sessionStorage.removeItem("hkr-signed-out"); toast("Signed out."); } } catch (_) {}
 })();

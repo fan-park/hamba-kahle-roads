@@ -13,7 +13,6 @@ This version runs **free**: the 20 route guides are written into the site, so no
 | `config.js` | Where you paste your database address and public key |
 | `supabase/schema.sql` | Creates the database tables and security rules |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Let people add the site to their phone's home screen like an app |
-| `api/briefing.js` | Optional: AI briefings for trips without a guide (off by default, see step 6) |
 
 ## What it costs
 
@@ -63,15 +62,9 @@ The anon key is meant to be public. The security rules in `schema.sql` make sure
 2. In Vercel: **Settings → Domains → Add**, then follow the instructions to point the domain at Vercel.
 3. Update the **Site URL** and **Redirect URLs** in Supabase (step 3) to the new domain.
 
-## Step 6 (optional, paid): AI briefings for other trips
+## Later: AI briefings for other trips
 
-Trips without a written guide show a list of guides and the driver reports. If you later want Claude to write a briefing for any trip:
-
-1. Create an account at console.anthropic.com, add billing, set a monthly spending limit and create an API key.
-2. In Vercel, **Settings → Environment Variables**, add `ANTHROPIC_API_KEY`, `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (from Supabase **Project Settings → API → service_role**; keep this one secret and never put it in `config.js`).
-3. In `config.js`, change `AI_BRIEFINGS: false` to `AI_BRIEFINGS: true`, then redeploy.
-
-Briefings are saved for 12 hours and each visitor is limited to 10 new briefings an hour, to keep costs down.
+The site has a switch for Claude-written briefings on trips without a guide (`AI_BRIEFINGS` in `config.js`), but the server part isn't built yet, so leave it set to `false`. It will need a small server function, a Claude API key with a monthly spending limit, and the Supabase service key kept in Vercel's environment variables (never in `config.js`).
 
 ---
 
