@@ -288,3 +288,8 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 
 .brand-h1 { margin: 0; font: inherit; }
 .reverse-note { border-left: 3px solid var(--marking); padding-left: 10px; max-width: 70ch; }
+
+/* Home-screen install help */
+.welcome-note { margin: 0; font-size: 14px; color: var(--asphalt-muted); }
+.welcome-link { color: var(--marking); font-size: 14px; }
+.install-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 15px; }

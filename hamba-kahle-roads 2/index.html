@@ -43,6 +43,7 @@
         <li><b>Check</b><span>See what drivers reported in the last few days. Tap "Still there" or "Gone now" to keep reports honest.</span></li>
         <li><b>Report</b><span>Passenger, or stopped? One tap tells the next driver what's ahead. Never while driving.</span></li>
       </ol>
+      <p class="welcome-note">No app to download. It works in your phone's browser, and you can <button class="linkbtn welcome-link" type="button" data-install>add it to your home screen</button> so it opens like an app.</p>
       <div class="welcome-actions">
         <button class="btn small" id="welcome-try" type="button">Try Durban to Joburg</button>
         <button class="welcome-ok" id="welcome-ok" type="button">Got it</button>
@@ -171,7 +172,7 @@
       <a href="about.html">About</a>
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
-      <button class="linkbtn" id="install" type="button" hidden>Add to home screen</button>
+      <button class="linkbtn" id="install" type="button" data-install hidden>Add to home screen</button>
     </nav>
   </div>
 </footer>
@@ -191,6 +192,15 @@
       <button class="btn" id="fb-send" type="submit">Send</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="install-help">
+  <div class="dialog-body">
+    <h2>Add it to your home screen</h2>
+    <p class="note">Hamba Kahle Roads is a website, so there's nothing to download from an app store. Add it to your home screen and it opens full-screen like an app.</p>
+    <div id="install-steps"></div>
+    <div class="dialog-actions"><button class="btn" type="button" id="install-close">Got it</button></div>
+  </div>
 </dialog>
 
 <dialog id="flag">

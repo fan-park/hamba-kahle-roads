@@ -1029,8 +1029,28 @@ window.addEventListener("hashchange", handleHash);
 
 /* ---------- Install + offline ---------- */
 let deferredInstall = null;
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; $("install").hidden = false; });
-$("install").onclick = async () => { if (!deferredInstall) return; deferredInstall.prompt(); await deferredInstall.userChoice; deferredInstall = null; $("install").hidden = true; };
+const isStandalone = () => (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isPhone = isIOS || /android|mobile/i.test(navigator.userAgent);
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; if (!isStandalone()) $("install").hidden = false; });
+if (isPhone && !isStandalone()) $("install").hidden = false;
+if (isStandalone()) document.querySelectorAll(".welcome-note").forEach(el => el.hidden = true);
+function installSteps() {
+  if (isIOS) return `<ol class="install-list"><li>Tap the <b>Share</b> button (the square with an arrow pointing up). In Safari it's at the bottom of the screen; in Chrome it's at the top.</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. Hamba Kahle Roads now sits on your home screen like an app.</li></ol>`;
+  if (/android/i.test(navigator.userAgent)) return `<ol class="install-list"><li>Tap the <b>⋮</b> menu at the top right of Chrome.</li><li>Tap <b>Add to Home screen</b> or <b>Install app</b>.</li><li>Tap <b>Add</b> or <b>Install</b>. It then opens from your home screen like an app.</li></ol>`;
+  return `<p class="note">Open <b>hambakahleroads.co.za</b> on your phone, then use your browser's menu or Share button and choose <b>Add to Home Screen</b>.</p>`;
+}
+document.addEventListener("click", async e => {
+  if (!e.target.closest("[data-install]")) return;
+  if (deferredInstall) {
+    deferredInstall.prompt(); await deferredInstall.userChoice; deferredInstall = null;
+    if (isStandalone()) $("install").hidden = true;
+    return;
+  }
+  $("install-steps").innerHTML = installSteps();
+  const d = $("install-help"); if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+});
+$("install-close").onclick = () => $("install-help").close();
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 
 /* ---------- Start ---------- */
