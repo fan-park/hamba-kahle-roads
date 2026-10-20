@@ -238,6 +238,7 @@ $("form").addEventListener("submit", async e => {
     if (wantGeo && !pos) showMsg("Couldn't get your location, so the report is posted without a pin.", "");
     await insertReport({ ...snap, lat: pos ? pos.lat : null, lng: pos ? pos.lng : null });
     showMsg("Posted. Thanks for looking out for the next driver.", "ok");
+    if (CFG.WHATSAPP_CHANNEL) $("f-msg").insertAdjacentHTML("beforeend", ` <a href="${esc(CFG.WHATSAPP_CHANNEL)}" target="_blank" rel="noopener">Get weekly road updates on WhatsApp</a>.`);
     if ($("f-where").value === sentWhere) $("f-where").value = "";
     if ($("f-note").value === sentNote) $("f-note").value = "";
     if (form.trip === snap.trip) { form.trip = ""; seg("f-trip", TRIPS, "trip", true); }
@@ -747,7 +748,8 @@ function renderGuide(g, original) {
         ${g.legs.map(l => `<div class="leg"><h3>${esc(l.name)}</h3><div class="items">${l.items.map(it => itemHtml(it, "general")).join("")}</div></div>`).join("")}
       </div>
     </div>
-    <p class="note">"Road know-how" is general guidance and isn't live. Check the official sources for closures before you leave.</p>`;
+    <p class="note">"Road know-how" is general guidance and isn't live. Check the official sources for closures before you leave.</p>
+    ${CFG.WHATSAPP_CHANNEL ? `<div class="wa-cta"><span><b>Get weekly road updates on WhatsApp.</b> Roadworks, closures and fuel prices every Thursday, free.</span><a class="btn wa" href="${esc(CFG.WHATSAPP_CHANNEL)}" target="_blank" rel="noopener">Follow Road Watch</a></div>` : ""}`;
   briefBody.querySelectorAll("[data-road]").forEach(b => b.onclick = () => {
     $("q").value = b.dataset.road; state.q = b.dataset.road; render();
     document.querySelector(".search-band").scrollIntoView({ behavior: "smooth" });

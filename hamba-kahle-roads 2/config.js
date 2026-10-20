@@ -7,6 +7,8 @@ window.HKR_CONFIG = {
   // Who runs the site. Shown on the privacy and terms pages. Fill these in before inviting people.
   OWNER_NAME: "Superfan",
   CONTACT_EMAIL: "officialsuperfanhq@gmail.com",
+  // The "Hamba Kahle Road Watch" WhatsApp Channel (weekly road updates).
+  WHATSAPP_CHANNEL: "https://whatsapp.com/channel/0029Vb9aVQIFCCoRCOsyE62f",
 
   // Trips without a written route guide can get an AI briefing from Claude.
   // Off by default (free). Set to true only after setting up step 6 in README.md.
