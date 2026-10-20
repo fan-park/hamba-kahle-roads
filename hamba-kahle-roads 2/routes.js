@@ -1,5 +1,5 @@
 /* Hamba Kahle Roads — built-in route guides.
-   General road knowledge for the 20 most-driven trips, written once and shown for free.
+   General road knowledge for popular long-distance trips and daily commutes, written once and shown for free.
    Live driver reports on each route's roads are added on top by app.js.
    Last checked: October 2026. Review these every few months: plazas, closures and road layouts change.
 
@@ -36,12 +36,15 @@ window.HKR_PLACES = {
   gqeberha:    ["gqeberha", "port elizabeth", "pe", "nelson mandela bay", "kariega", "uitenhage"],
   drakensberg: ["drakensberg", "berg", "champagne valley", "winterton", "bergville", "central berg", "cathedral peak", "royal natal", "underberg"],
   ballito:     ["ballito", "salt rock", "umhlali", "north coast", "kwadukuza", "stanger", "zimbali", "king shaka airport", "king shaka"],
-  southcoast:  ["margate", "south coast", "port shepstone", "shelly beach", "scottburgh", "uvongo", "ramsgate", "southbroom", "hibberdene", "umkomaas", "amanzimtoti"],
+  southcoast:  ["margate", "south coast", "port edward", "port shepstone", "shelly beach", "scottburgh", "uvongo", "ramsgate", "southbroom", "hibberdene", "umkomaas", "amanzimtoti"],
   eastlondon:  ["east london", "el", "buffalo city", "gonubie"],
   gardenroute: ["garden route", "knysna", "george", "wilderness", "plettenberg bay", "plett", "mossel bay", "sedgefield"],
   hermanus:    ["hermanus", "overberg", "kleinmond", "stanford", "gansbaai"],
   stellenbosch:["stellenbosch", "stellies", "winelands", "somerset west"],
-  langebaan:   ["langebaan", "west coast", "west coast national park", "saldanha", "paternoster", "velddrif", "yzerfontein", "jacobsbaai"]
+  langebaan:   ["langebaan", "west coast", "west coast national park", "saldanha", "paternoster", "velddrif", "yzerfontein", "jacobsbaai"],
+  dundee:      ["dundee", "glencoe", "dannhauser", "wasbank"],
+  nqutu:       ["nqutu", "isandlwana", "nondweni"],
+  stlucia:     ["st lucia", "saint lucia", "st. lucia", "mtubatuba", "isimangaliso", "cape vidal", "hluhluwe", "elephant coast"]
 };
 
 /* Suburbs and areas inside a bigger city. A trip from a suburb uses the city's guide
@@ -62,7 +65,8 @@ window.HKR_PLACE_LABELS = {
   khayelitsha: "Khayelitsha & Mitchells Plain", tableview: "Table View",
   bloem: "Bloemfontein", polokwane: "Polokwane", kruger: "Kruger Park (Malelane)", panorama: "Dullstroom & Graskop", suncity: "Sun City",
   gqeberha: "Gqeberha (Port Elizabeth)", drakensberg: "Drakensberg", ballito: "Ballito", southcoast: "South Coast (Margate)",
-  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", langebaan: "Langebaan (West Coast)"
+  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", langebaan: "Langebaan (West Coast)",
+  dundee: "Dundee", nqutu: "Nqutu", stlucia: "St Lucia"
 };
 
 window.HKR_ROUTES = [
@@ -863,8 +867,193 @@ window.HKR_ROUTES = [
       { kind: "lane", title: "Into town", detail: "The R27 runs past Paarden Eiland towards the Foreshore. Take the N1 for the CBD and Waterfront exits." }
     ]}
   ]
+},
+/* 33 */ {
+  id: "dundee-durban", a: ["dundee"], b: ["durban"],
+  title: "Dundee to Durban", route: "R602 through Glencoe, N11 to Ladysmith, then the N3", distanceKm: 320, driveTime: "3½–4 hours",
+  roads: ["N3", "N11", "R602"], places: ["Dundee", "Glencoe", "Wasbank", "Ladysmith", "Colenso", "Estcourt", "Mooi River", "Howick", "Pietermaritzburg", "Pinetown"],
+  summary: "Country roads across to Ladysmith, then the N3 toll road down through the Midlands to Durban.",
+  before: [
+    "Have a card or cash for the N3 tolls: a ramp toll where you join at the Ladysmith (N11) interchange, then the Mooi and Mariannhill plazas.",
+    "Save the N3 Helpline: 0800 63 43 57 (24 hours).",
+    "Do the stretch to Ladysmith in daylight if you can: animals on the road and few streetlights.",
+    "Check @N3Route on X for closures before you leave, especially on holiday weekends."
+  ],
+  legs: [
+    { name: "Dundee to Ladysmith", items: [
+      { kind: "hazard", title: "Rural roads to the N11", detail: "Two-lane road through Glencoe and past Wasbank. Watch for livestock, pedestrians and slow trucks, especially at dusk." },
+      { kind: "hazard", title: "Potholes and broken edges", detail: "Provincial roads in northern KZN are often patched or potholed. Slow down where the surface breaks up and don't swerve suddenly." },
+      { kind: "fuel", title: "Ladysmith", detail: "The last big town before the N3, with fuel and food." }
+    ]},
+    { name: "Ladysmith to Pietermaritzburg", items: [
+      { kind: "toll", title: "Ladysmith (N11) ramp toll", detail: "Joining the N3 southbound at the N11 interchange is tolled." },
+      { kind: "fuel", title: "Stops at Estcourt and Mooi River", detail: "Large fuel and food stops just off the N3, a good break halfway." },
+      { kind: "toll", title: "Mooi Toll Plaza", detail: "Mainline plaza near Mooi River. The Mooi River off-ramps are tolled too." },
+      { kind: "hazard", title: "Town Hill", detail: "Long, steep hill between Hilton and Pietermaritzburg. Slow trucks, and often misty early in the morning." }
+    ]},
+    { name: "Pietermaritzburg to Durban", items: [
+      { kind: "lane", title: "Pietermaritzburg bypass", detail: "The N3 skirts the city with exits close together. Stay in the through lanes unless you're stopping." },
+      { kind: "toll", title: "Mariannhill Toll Plaza", detail: "The last plaza, near Pinetown. Queues build on Friday afternoons and before long weekends." },
+      { kind: "hazard", title: "Steep hills around Pinetown", detail: "Loaded trucks crawl uphill and brake hard going down. Keep a big gap." },
+      { kind: "tip", title: "R33 via Greytown", detail: "Looks shorter on the map, through Pomeroy, Tugela Ferry and Greytown, but it's slower: rural single-lane road with speed humps, potholes and livestock. Only in daylight, and best if you know it." }
+    ]}
+  ]
+},
+/* 34 */ {
+  id: "dundee-nqutu", a: ["dundee"], b: ["nqutu"],
+  title: "Dundee to Nqutu", route: "R68 east", distanceKm: 50, driveTime: "45 minutes to 1 hour",
+  roads: ["R68"], places: ["Dundee", "Nqutu", "Isandlwana"],
+  summary: "A short rural run on the R68 through battlefields country.",
+  before: [
+    "Fill up in Dundee; there's little in between.",
+    "Drive in daylight if you can: livestock and pedestrians are common and there are few streetlights.",
+    "Minibus taxis stop often, so keep a safe following distance."
+  ],
+  legs: [
+    { name: "Dundee to Nqutu", items: [
+      { kind: "lane", title: "Leaving Dundee", detail: "The R68 and R33 share the road for the first few kilometres east of Dundee. Stay on the R68 where the R33 splits off towards Vryheid." },
+      { kind: "hazard", title: "Livestock and pedestrians", detail: "Cattle, goats and people on or beside the road, especially near villages and at dusk." },
+      { kind: "hazard", title: "Rough sections", detail: "Potholes and broken edges in places. Slow down and don't swerve suddenly." },
+      { kind: "safety", title: "Taxis stopping", detail: "Minibus taxis pull over to drop off and pick up, sometimes without warning. Keep a gap and don't overtake on blind rises." },
+      { kind: "tip", title: "Battlefields", detail: "Isandlwana and Rorke's Drift are signposted in this area if you're visiting the battlefields." }
+    ]}
+  ]
+},
+/* 35 */ {
+  id: "joburg-southcoast", a: ["joburg", "pretoria"], b: ["southcoast"],
+  title: "Johannesburg to Margate (South Coast)", route: "N3 to Durban, then the N2 south and the R61", distanceKm: 690, driveTime: "7½–8½ hours",
+  roads: ["N3", "N2", "R61"], places: ["Heidelberg", "Villiers", "Harrismith", "Van Reenen", "Ladysmith", "Estcourt", "Mooi River", "Pietermaritzburg", "Pinetown", "Amanzimtoti", "Scottburgh", "Hibberdene", "Port Shepstone", "Shelly Beach", "Uvongo", "Margate"],
+  summary: "The N3 down to Durban, then south along the coast. One of the busiest holiday drives in December.",
+  before: [
+    "Have a card or cash for five N3 mainline plazas (De Hoek, Wilge, Tugela, Mooi and Mariannhill), plus ramp tolls near Port Shepstone if you exit there.",
+    "Save the N3 Helpline: 0800 63 43 57 (24 hours).",
+    "On peak December days, leave very early; the N3 can crawl from Harrismith onwards.",
+    "Plan a break at Harrismith or Mooi River.",
+    "Check @N3Route on X for closures before you leave."
+  ],
+  legs: [
+    { name: "Johannesburg to Harrismith", items: [
+      { kind: "toll", title: "De Hoek Toll Plaza", detail: "The first plaza, just past Heidelberg." },
+      { kind: "toll", title: "Wilge Toll Plaza", detail: "Mainline plaza on the Free State stretch between Villiers and Harrismith." },
+      { kind: "hazard", title: "Long, straight Free State roads", detail: "Fatigue is the main risk here. Swap drivers or stop if you feel drowsy." },
+      { kind: "fuel", title: "Harrismith", detail: "Big 24-hour fuel and food stops just off the N3. Roughly halfway to Durban." }
+    ]},
+    { name: "Harrismith to Pietermaritzburg", items: [
+      { kind: "hazard", title: "Van Reenen's Pass", detail: "Steep, winding pass into KwaZulu-Natal and a major truck route. Expect slow trucks and breakdowns; don't tailgate." },
+      { kind: "weather", title: "Mist, and snow in winter", detail: "Thick mist is common on the pass. Snow can close it on cold winter days." },
+      { kind: "toll", title: "Tugela Toll Plaza", detail: "Mainline plaza near Ladysmith." },
+      { kind: "toll", title: "Mooi Toll Plaza", detail: "Mainline plaza near Mooi River." },
+      { kind: "hazard", title: "Town Hill", detail: "Long, steep descent into Pietermaritzburg. Slow trucks, and often misty in the morning." }
+    ]},
+    { name: "Pietermaritzburg to Durban", items: [
+      { kind: "toll", title: "Mariannhill Toll Plaza", detail: "The last N3 plaza, near Pinetown. Queues build before long weekends." },
+      { kind: "lane", title: "EB Cloete interchange", detail: "Near Westville, follow signs for the N2 south (Port Shepstone) instead of carrying on into Durban. Get into the right lanes early; it's a busy interchange." }
+    ]},
+    { name: "Durban to Margate", items: [
+      { kind: "hazard", title: "Amanzimtoti and Kingsburgh", detail: "Busy with local traffic and exits close together. Keep a gap and signal early." },
+      { kind: "hazard", title: "Single-carriageway sections", detail: "The N2 narrows south of Scottburgh in places. Don't overtake on blind rises." },
+      { kind: "toll", title: "Ramp tolls near Port Shepstone", detail: "The Umtentweni and Izotsha (Shelly Beach) ramps are tolled." },
+      { kind: "lane", title: "Onto the R61", detail: "At Port Shepstone, keep on the coast road for Shelly Beach, Uvongo and Margate. The N2 turns inland toward Kokstad." }
+    ]}
+  ]
+},
+/* 36 */ {
+  id: "durban-stlucia", a: ["durban"], b: ["stlucia"],
+  title: "Durban to St Lucia", route: "N2 north via Ballito and Empangeni, then the R618 from Mtubatuba", distanceKm: 250, driveTime: "2½–3 hours",
+  roads: ["N2", "R618"], places: ["Umhlanga", "King Shaka", "Tongaat", "oThongathi", "Ballito", "KwaDukuza", "Stanger", "Gingindlovu", "Mtunzini", "Empangeni", "Richards Bay", "Mtubatuba", "St Lucia"],
+  summary: "The N2 North Coast toll road, then sugar-cane country and a short run to the estuary.",
+  before: [
+    "Have a card or cash for the North Coast toll plazas, including oThongathi, Mvoti and Mtunzini.",
+    "On holiday weekends, leave Durban early; traffic towards Ballito backs up.",
+    "Arrive in daylight. Hippos walk the streets of St Lucia at night, so drive slowly after dark.",
+    "Fill up in Empangeni or Mtubatuba."
+  ],
+  legs: [
+    { name: "Durban to KwaDukuza", items: [
+      { kind: "hazard", title: "Umhlanga and Gateway traffic", detail: "The N2 near Umhlanga and Mount Edgecombe is busy at peak times." },
+      { kind: "toll", title: "oThongathi Toll Plaza", detail: "Mainline plaza between King Shaka Airport and Ballito." },
+      { kind: "toll", title: "Mvoti Toll Plaza", detail: "Mainline plaza near KwaDukuza (Stanger)." }
+    ]},
+    { name: "KwaDukuza to Empangeni", items: [
+      { kind: "toll", title: "Mtunzini Toll Plaza", detail: "Mainline plaza near Mtunzini." },
+      { kind: "hazard", title: "Cane and timber trucks", detail: "Heavy trucks join from farm roads and slow down on hills. Watch for mud on the road in the harvest season." }
+    ]},
+    { name: "Empangeni to St Lucia", items: [
+      { kind: "hazard", title: "Pedestrians and livestock", detail: "Further north, people and animals use the road verges. Take extra care at dusk." },
+      { kind: "lane", title: "Turn off at Mtubatuba", detail: "Leave the N2 at Mtubatuba and take the R618 east to St Lucia, about 25 km." },
+      { kind: "safety", title: "Hippos after dark", detail: "Hippos graze in St Lucia town at night. Drive slowly, and don't get out to look." }
+    ]}
+  ]
+},
+/* 37 */ {
+  id: "joburg-eastlondon", a: ["joburg", "pretoria"], b: ["eastlondon"],
+  title: "Johannesburg to East London", route: "N1 to Bloemfontein, then the N6 via Aliwal North and Komani", distanceKm: 990, driveTime: "10–11 hours",
+  roads: ["N1", "N6"], places: ["Grasmere", "Parys", "Kroonstad", "Winburg", "Brandfort", "Bloemfontein", "Reddersburg", "Smithfield", "Rouxville", "Aliwal North", "Jamestown", "Penhoek", "Komani", "Queenstown", "Cathcart", "Stutterheim"],
+  summary: "A long day: fast N1 freeway to Bloemfontein, then the toll-free N6 across the Orange River and through the Eastern Cape highlands.",
+  before: [
+    "Have a card or cash for the N1 tolls (Grasmere, Vaal and Verkeerdevlei). The N6 has no tolls.",
+    "It's a 10-hour-plus drive. Consider an overnight stop in Bloemfontein or Aliwal North.",
+    "Penhoek Pass gets mist, and snow in winter. Check conditions before you go.",
+    "Fill up in Bloemfontein and Aliwal North; towns are far apart on the N6."
+  ],
+  legs: [
+    { name: "Johannesburg to Bloemfontein", items: [
+      { kind: "toll", title: "Three N1 toll plazas", detail: "Grasmere (south of Joburg), Vaal (near Parys) and Verkeerdevlei (near Brandfort)." },
+      { kind: "hazard", title: "Long, straight Free State roads", detail: "Fatigue is the main risk. Swap drivers or stop if you feel drowsy." },
+      { kind: "lane", title: "Onto the N6", detail: "The N6 starts at an interchange on the N1 western bypass around Bloemfontein. Follow the N6 signs for Aliwal North." }
+    ]},
+    { name: "Bloemfontein to Aliwal North", items: [
+      { kind: "hazard", title: "Single carriageway with trucks", detail: "Mostly two-lane road with heavy trucks. Only overtake where you can see well ahead." },
+      { kind: "safety", title: "Small towns", detail: "The N6 runs through or past Reddersburg, Smithfield and Rouxville. Slow down for the town speed limits." },
+      { kind: "fuel", title: "Aliwal North", detail: "Fuel and food just after crossing the Orange River into the Eastern Cape." }
+    ]},
+    { name: "Aliwal North to East London", items: [
+      { kind: "weather", title: "Penhoek Pass", detail: "Mountain pass north of Komani. Mist is common, and snow can close it in winter." },
+      { kind: "hazard", title: "Livestock and potholes", detail: "Animals on the road and patched surfaces are common in the Eastern Cape. Avoid driving this stretch at night." },
+      { kind: "lane", title: "Through Komani", detail: "The N6 runs through Komani (Queenstown) with robots and traffic circles. Follow the N6 signs for East London." },
+      { kind: "lane", title: "East London end", detail: "The N6 ends at the N2 interchange on the edge of the city." }
+    ]}
+  ]
+},
+/* 38 */ {
+  id: "bloem-durban", a: ["bloem"], b: ["durban"],
+  title: "Bloemfontein to Durban", route: "N1 to Winburg, the N5 via Bethlehem to Harrismith, then the N3", distanceKm: 650, driveTime: "7–8 hours",
+  roads: ["N1", "N5", "N3"], places: ["Brandfort", "Winburg", "Senekal", "Paul Roux", "Bethlehem", "Kestell", "Harrismith", "Van Reenen", "Ladysmith", "Estcourt", "Mooi River", "Pietermaritzburg", "Pinetown"],
+  summary: "Free State farm roads through Bethlehem, then the N3 over Van Reenen's Pass and down to the coast.",
+  before: [
+    "Have a card or cash for the tolls: Verkeerdevlei on the N1, then Tugela, Mooi and Mariannhill on the N3.",
+    "Save the N3 Helpline: 0800 63 43 57 (24 hours).",
+    "Try to cross Van Reenen's Pass in daylight; mist is common.",
+    "Fill up in Bethlehem or Harrismith."
+  ],
+  legs: [
+    { name: "Bloemfontein to Bethlehem", items: [
+      { kind: "toll", title: "Verkeerdevlei Toll Plaza", detail: "On the N1 near Brandfort, before you turn off at Winburg." },
+      { kind: "lane", title: "Onto the N5 at Winburg", detail: "Leave the N1 at the Winburg interchange and follow the N5 east towards Senekal and Bethlehem." },
+      { kind: "hazard", title: "Two-lane farm road", detail: "The N5 is mostly single carriageway with trucks and farm vehicles. Watch for crossroads without robots." },
+      { kind: "safety", title: "Through Senekal", detail: "The N5 runs through the town centre. Slow down for pedestrians and intersections." }
+    ]},
+    { name: "Bethlehem to Harrismith", items: [
+      { kind: "lane", title: "Through Bethlehem", detail: "The N5 runs through the city centre on one-way streets. Follow the N5 signs carefully." },
+      { kind: "fuel", title: "Bethlehem", detail: "Plenty of fuel and food; a good break before the N3." },
+      { kind: "lane", title: "Onto the N3 at Harrismith", detail: "The N5 ends at an interchange with the N3. Join the N3 towards Durban." }
+    ]},
+    { name: "Harrismith to Pietermaritzburg", items: [
+      { kind: "hazard", title: "Van Reenen's Pass", detail: "Steep, winding pass into KwaZulu-Natal and a major truck route. Expect slow trucks and breakdowns." },
+      { kind: "weather", title: "Mist, and snow in winter", detail: "Thick mist is common on the pass. Snow can close it on cold winter days." },
+      { kind: "toll", title: "Tugela Toll Plaza", detail: "Mainline plaza near Ladysmith." },
+      { kind: "toll", title: "Mooi Toll Plaza", detail: "Mainline plaza near Mooi River." },
+      { kind: "hazard", title: "Town Hill", detail: "Long, steep descent into Pietermaritzburg. Slow trucks, and often misty in the morning." }
+    ]},
+    { name: "Pietermaritzburg to Durban", items: [
+      { kind: "lane", title: "Pietermaritzburg bypass", detail: "The N3 skirts the city with exits close together. Stay in the through lanes." },
+      { kind: "toll", title: "Mariannhill Toll Plaza", detail: "The last plaza, near Pinetown. Queues build before long weekends." },
+      { kind: "hazard", title: "Steep hills around Pinetown", detail: "Loaded trucks crawl uphill and brake hard going down. Keep a big gap." }
+    ]}
+  ]
 }
 ];
+
 
 /* Approximate corridors for each guide, used to check that a pinned driver report is actually on this trip.
    Each path is an ordered list of [lat, lng] waypoints; tol is how far from the line (in km) still counts. */
@@ -918,7 +1107,14 @@ window.HKR_ROUTE_PATHS = (() => {
     camperdown: [-29.73, 30.53], catoridge: [-29.74, 30.59], hammarsdale: [-29.79, 30.66], mariannhill: [-29.84, 30.83],
     tygervalley: [-33.875, 18.63], plattekloof: [-33.87, 18.57], goodwood: [-33.91, 18.55], paarden: [-33.91, 18.47],
     tokai: [-34.06, 18.45], constantia: [-34.02, 18.45], wynberg: [-34.00, 18.47], newlands: [-33.97, 18.46], rondebosch: [-33.96, 18.47],
-    khayelitsha: [-34.04, 18.67], mitchellsplain: [-34.05, 18.62], langa: [-33.94, 18.53]
+    khayelitsha: [-34.04, 18.67], mitchellsplain: [-34.05, 18.62], langa: [-33.94, 18.53],
+    dundee: [-28.168, 30.234], glencoe: [-28.18, 30.15], wasbank: [-28.32, 30.10], nqutu: [-28.22, 30.67],
+    helpmekaar: [-28.37, 30.38], pomeroy: [-28.56, 30.43], tugelaferry: [-28.75, 30.45], greytown: [-29.06, 30.59],
+    kwadukuza: [-29.34, 31.29], gingindlovu: [-29.02, 31.58], mtunzini: [-28.95, 31.75], empangeni: [-28.75, 31.89],
+    mtubatuba: [-28.42, 32.18], stlucia: [-28.38, 32.41],
+    reddersburg: [-29.65, 26.17], smithfield: [-30.21, 26.53], rouxville: [-30.42, 26.83], aliwal: [-30.69, 26.71],
+    jamestown: [-31.12, 26.81], komani: [-31.90, 26.88], cathcart: [-32.30, 27.14], stutterheim: [-32.57, 27.42],
+    senekal: [-28.32, 27.62], paulroux: [-28.30, 27.95], bethlehem: [-28.23, 28.31], kestell: [-28.31, 28.70]
   };
   const path = (...k) => k.map(x => { if (!P[x]) throw new Error("No coordinates for " + x); return P[x]; });
   const LONG = 25, SUBURB = 6;
@@ -954,6 +1150,12 @@ window.HKR_ROUTE_PATHS = (() => {
     "bellville-capetown": { tol: 4, paths: [path("bellville", "tygervalley", "plattekloof", "goodwood", "paarden", "capetown")] },
     "southern-capetown": { tol: 4, paths: [path("tokai", "constantia", "wynberg", "newlands", "rondebosch", "hospitalbend", "capetown")] },
     "khayelitsha-capetown": { tol: 5, paths: [path("khayelitsha", "mitchellsplain", "ctairport", "langa", "hospitalbend", "capetown")] },
-    "tableview-capetown": { tol: 4, paths: [path("tableview", "milnerton", "paarden", "capetown")] }
+    "tableview-capetown": { tol: 4, paths: [path("tableview", "milnerton", "paarden", "capetown")] },
+    "dundee-durban": { tol: 20, paths: [path("dundee", "glencoe", "wasbank", "ladysmith", "estcourt", "mooi", "howick", "pmb", "pinetown", "durban"), path("dundee", "helpmekaar", "pomeroy", "tugelaferry", "greytown", "pmb")] },
+    "dundee-nqutu": { tol: 8, paths: [path("dundee", "nqutu")] },
+    "joburg-southcoast": { tol: LONG, paths: [path("pretoria", "joburg", "heidelberg", "villiers", "harrismith", "vanreenen", "ladysmith", "estcourt", "mooi", "howick", "pmb", "pinetown", "westville", "amanzimtoti", "umkomaas", "scottburgh", "hibberdene", "portshepstone", "margate")] },
+    "durban-stlucia": { tol: 15, paths: [path("dbncbd", "umhlanga", "kingshaka", "tongaat", "ballito", "kwadukuza", "gingindlovu", "mtunzini", "empangeni", "mtubatuba", "stlucia")] },
+    "joburg-eastlondon": { tol: LONG, paths: [path("pretoria", "joburg", "grasmere", "parys", "kroonstad", "winburg", "brandfort", "bloem", "reddersburg", "smithfield", "rouxville", "aliwal", "jamestown", "komani", "cathcart", "stutterheim", "eastlondon")] },
+    "bloem-durban": { tol: LONG, paths: [path("bloem", "brandfort", "winburg", "senekal", "paulroux", "bethlehem", "kestell", "harrismith", "vanreenen", "ladysmith", "estcourt", "mooi", "howick", "pmb", "pinetown", "durban")] }
   };
 })();

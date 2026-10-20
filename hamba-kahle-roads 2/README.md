@@ -2,14 +2,14 @@
 
 *Hamba kahle* means "go well". Drivers type their trip ("Durban to Joburg") and get a route guide of what to look out for, plus live reports from other drivers. They can report potholes and hazards with one tap.
 
-This version runs **free**: the 20 route guides are written into the site, so no AI service is needed.
+This version runs **free**: 38 route guides (26 trips and 12 daily commutes) are written into the site, so no AI service is needed.
 
 ## What's in this folder
 
 | File | What it does |
 |---|---|
 | `index.html`, `styles.css`, `app.js` | The website itself |
-| `routes.js` | The 20 route guides. Edit this file to change or add guides |
+| `routes.js` | The 38 route guides. Edit this file to change or add guides |
 | `config.js` | Where you paste your database address and public key |
 | `supabase/schema.sql` | Creates the database tables and security rules |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Let people add the site to their phone's home screen like an app |
