@@ -414,6 +414,7 @@ function render() {
   renderCheck(list);
   renderMap(list);
   refreshGuideLive();
+  renderMyTrips();
   $("feed-title").textContent = state.near ? "Reports near you" : state.q ? "Reports matching " + state.q : "Latest from the road";
   const realCount = list.filter(r => !r.example).length;
   $("feed-count").textContent = realCount ? realCount + " report" + (realCount === 1 ? "" : "s") : "";
@@ -628,8 +629,55 @@ ROUTES.slice().sort((x, y) => x.title.localeCompare(y.title)).forEach(r => {
 sel.addEventListener("change", () => { const r = ROUTES.find(x => x.id === sel.value); if (r) openGuide(r, false); sel.value = ""; });
 $("planner").addEventListener("submit", e => { e.preventDefault(); getBriefing(false); });
 
+/* ---------- Your trips: guides you've opened, remembered on this device only ---------- */
+const TRIPS_KEY = "hkr-trips", TRIPS_MAX = 4;
+function loadTrips() {
+  try { const t = JSON.parse(store.get(TRIPS_KEY) || "[]"); return Array.isArray(t) ? t.filter(x => x && ROUTES.some(r => r.id === x.id)) : []; }
+  catch (_) { return []; }
+}
+function saveTrips(t) { store.set(TRIPS_KEY, JSON.stringify(t.slice(0, TRIPS_MAX))); }
+function rememberTrip(route, reversed) {
+  if (!route || !route.id) return;
+  const t = loadTrips().filter(x => !(x.id === route.id && !!x.rev === !!reversed));
+  t.unshift({ id: route.id, rev: !!reversed, seen: Date.now() });
+  saveTrips(t);
+  renderMyTrips();
+}
+function forgetTrip(i) { const t = loadTrips(); t.splice(i, 1); saveTrips(t); renderMyTrips(); }
+function renderMyTrips() {
+  const box = $("mytrips"), list = $("mytrips-list");
+  if (!box) return;
+  const trips = loadTrips();
+  if (!trips.length) { box.hidden = true; return; }
+  box.hidden = false;
+  list.innerHTML = trips.map((t, i) => {
+    const route = ROUTES.find(r => r.id === t.id);
+    const title = orient(route, t.rev).title.replace(" to ", " → ");
+    let status;
+    if (!CONNECTED) status = "";
+    else if (state.loadError && !state.reports.some(r => !r.example)) status = `<span class="trip-status">Reports unavailable</span>`;
+    else if (!state.loaded) status = `<span class="trip-status">Checking…</span>`;
+    else {
+      const live = reportsOnRoute(route);
+      const fresh = live.filter(({ r }) => r.createdAt > (t.seen || 0)).length;
+      status = fresh ? `<span class="trip-status new">${fresh} new report${fresh === 1 ? "" : "s"}</span>`
+        : live.length ? `<span class="trip-status">${live.length} report${live.length === 1 ? "" : "s"}, last 3 days</span>`
+        : `<span class="trip-status">No recent reports</span>`;
+    }
+    return `<div class="trip"><button class="trip-open" type="button" data-trip="${i}"><span class="trip-title">${esc(title)}</span>${status}</button><button class="trip-x" type="button" data-forget="${i}" aria-label="Remove ${esc(title)}">×</button></div>`;
+  }).join("");
+}
+$("mytrips-list").addEventListener("click", e => {
+  const f = e.target.closest("[data-forget]");
+  if (f) { forgetTrip(+f.dataset.forget); return; }
+  const o = e.target.closest("[data-trip]"); if (!o) return;
+  const t = loadTrips()[+o.dataset.trip]; const route = t && ROUTES.find(r => r.id === t.id);
+  if (route) openGuide(route, t.rev, false);
+});
+
 function openGuide(route, reversed, keepInputs) {
   if (briefCtl) { briefCtl.abort(); briefCtl = null; }
+  rememberTrip(route, reversed);
   const g = orient(route, reversed);
   if (!keepInputs) {
     const a = placeLabel(route.a[0]), b = placeLabel(route.b[0]);
