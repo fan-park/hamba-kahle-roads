@@ -79,6 +79,8 @@ Open `routes.js`. Each guide has:
 
 Write each guide in one direction only; the site reverses it automatically for the return trip. Word items so they make sense both ways ("steep pass between X and Y" rather than "climb into Y").
 
+**After any change to `routes.js` or `index.html`, run `node tools/build-guides.js`** (or `npm run guides`) and commit the result. It writes one page per guide and direction into `guides/` (for example `/guides/durban-to-johannesburg`) and updates `sitemap.xml`. These pages are how Google finds each guide: each is the same one-page site, opened at that guide, with its own title and description. Don't edit the files in `guides/` by hand.
+
 **Keep the guides up to date.** They were checked in October 2026 against public sources, but toll plazas, road layouts and closures change. Review them every few months, and when drivers report something that's become permanent, add it to the guide.
 
 ## Before you launch publicly

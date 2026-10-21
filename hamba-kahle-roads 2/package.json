@@ -2,5 +2,10 @@
   "name": "hamba-kahle-roads",
   "private": true,
   "description": "Hamba Kahle Roads: trip briefings and live road reports from South African drivers.",
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "guides": "node tools/build-guides.js"
+  }
 }

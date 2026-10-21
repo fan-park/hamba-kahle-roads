@@ -68,7 +68,7 @@ a { color: var(--info); }
 @media (max-width: 700px) { .planner { grid-template-columns: minmax(0,1fr); } .arrow { display: none; } }
 .popular { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .popular .eyebrow { color: var(--asphalt-muted); margin-right: 4px; }
-.pchip { background: transparent; color: var(--asphalt-ink); border: 1px solid #4a5450; border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; }
+.pchip { display: inline-block; text-decoration: none; background: transparent; color: var(--asphalt-ink); border: 1px solid #4a5450; border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; }
 .pchip:hover { border-color: var(--marking); }
 
 .guides { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }

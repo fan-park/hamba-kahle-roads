@@ -616,9 +616,9 @@ function reportsOnRoute(route) {
 /* Planner controls */
 const POPULAR_IDS = ["durban-joburg", "joburg-capetown", "pretoria-kruger", "pretoria-joburg", "capetown-gardenroute", "durban-ballito"];
 POPULAR_IDS.map(id => ROUTES.find(r => r.id === id)).filter(Boolean).forEach(r => {
-  const c = document.createElement("button");
-  c.className = "pchip"; c.type = "button"; c.textContent = r.title.replace(" to ", " → ");
-  c.onclick = () => openGuide(r, false);
+  const c = document.createElement("a");
+  c.className = "pchip"; c.href = guidePath(r, false); c.textContent = r.title.replace(" to ", " → ");
+  c.onclick = e => { e.preventDefault(); openGuide(r, false); };
   $("popular").appendChild(c);
 });
 const sel = $("p-guides");
@@ -684,7 +684,7 @@ function openGuide(route, reversed, keepInputs) {
     $("p-from").value = reversed ? b : a; $("p-to").value = reversed ? a : b;
   }
   briefBand.hidden = false;
-  g.shareHash = guideHash(route, reversed);
+  g.shareHash = guidePath(route, reversed);
   renderGuide(g, route);
   try { history.replaceState(null, "", g.shareHash); } catch (_) {}
   briefBand.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -696,13 +696,25 @@ async function getBriefing(refresh) {
   const hit = findGuide(from, to);
   if (hit) { openGuide(hit.route, hit.reversed, true); return; }
   briefBand.hidden = false;
+  state.guide = null;
+  if (location.pathname !== "/" || location.hash) { try { history.replaceState(null, "", "/"); } catch (_) {} }
   if (CFG.AI_BRIEFINGS) return aiBriefing(from, to, refresh);
   renderNoGuide(from, to);
   briefBand.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* Sharing */
-const SITE_URL = location.origin + location.pathname;
+const SITE_URL = location.origin + "/";
+/* Every guide also has its own address (/guides/durban-to-johannesburg) so search engines can list it.
+   It opens this same one-page site with that guide showing. Keep in step with tools/build-guides.js. */
+function guideSlug(title) { return title.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function guidePath(route, reversed) { return "/guides/" + guideSlug(orient(route, reversed).title); }
+function guideFromPath(path) {
+  const m = (path || "").match(/^\/guides\/([a-z0-9-]+?)(?:\.html)?\/?$/);
+  if (!m) return null;
+  for (const r of ROUTES) for (const rev of [false, true]) if (guideSlug(orient(r, rev).title) === m[1]) return { route: r, reversed: rev };
+  return null;
+}
 const waLink = text => "https://wa.me/?text=" + encodeURIComponent(text);
 function guideHash(route, reversed) { return "#g-" + route.id + (reversed ? "-r" : ""); }
 function reportShareText(r) {
@@ -715,7 +727,7 @@ function reportShareText(r) {
 }
 function guideShareText(g, hash) {
   return "Driving " + g.title + "? Here's what to look out for: tolls, passes, fuel stops and recent reports from other drivers.\n" +
-    "Hamba Kahle Roads: " + SITE_URL + hash;
+    "Hamba Kahle Roads: " + location.origin + hash;
 }
 async function copyText(text, btn) {
   const done = () => { const t = btn.textContent; btn.textContent = "Link copied"; setTimeout(() => btn.textContent = t, 1600); };
@@ -803,7 +815,7 @@ function renderGuide(g, original) {
     document.querySelector(".search-band").scrollIntoView({ behavior: "smooth" });
   });
   const cp = $("g-copy");
-  if (cp) cp.onclick = () => copyText(SITE_URL + g.shareHash, cp);
+  if (cp) cp.onclick = () => copyText(location.origin + g.shareHash, cp);
 }
 
 function renderNoGuide(from, to) {
@@ -1139,5 +1151,6 @@ if (!CONNECTED) {
   document.addEventListener("visibilitychange", () => { if (!document.hidden) loadReports(); });
 }
 if (/^#(g|r)-/.test(location.hash)) handleHash();
+else { const fromPath = guideFromPath(location.pathname); if (fromPath) openGuide(fromPath.route, fromPath.reversed, false); }
 try { if (sessionStorage.getItem("hkr-signed-out")) { sessionStorage.removeItem("hkr-signed-out"); toast("Signed out."); } } catch (_) {}
 })();

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<base href="/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dundee to Nqutu road trip guide: R68 tolls, hazards and stops | Hamba Kahle Roads</title>
+<meta name="description" content="Dundee to Nqutu: A short rural run on the R68 through battlefields country. About 50 km, 45 minutes to 1 hour. Tolls, risky stretches, best lanes, fuel stops and recent driver reports.">
+<meta name="theme-color" content="#262c2a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/logo-mark.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:title" content="Dundee to Nqutu | Hamba Kahle Roads">
+<meta property="og:description" content="Dundee to Nqutu: A short rural run on the R68 through battlefields country. About 50 km, 45 minutes to 1 hour. Tolls, risky stretches, best lanes, fuel stops and recent driver reports.">
+<meta property="og:image" content="https://hambakahleroads.co.za/icons/share-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://hambakahleroads.co.za/guides/dundee-to-nqutu">
+<link rel="canonical" href="https://hambakahleroads.co.za/guides/dundee-to-nqutu">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@500;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=Overpass+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="topbar">
+      <h1 class="brand-h1"><a class="brand" href="./"><img class="brand-mark" src="icons/logo-mark.svg" alt="" width="44" height="44"><span class="brand-text">Hamba Kahle <span>Roads</span></span></a></h1>
+      <div class="account" id="account"></div>
+    </div>
+    <p class="tag"><em>Hamba kahle</em> means "go well". Tell us your trip and get a list of what to look out for, from other drivers and road know-how your maps app won't give you.</p>
+    <section class="mytrips" id="mytrips" aria-labelledby="mytrips-title" hidden>
+      <div class="mytrips-head"><h2 id="mytrips-title">Your trips</h2><span class="mytrips-note">Saved on this device</span></div>
+      <div class="mytrips-list" id="mytrips-list"></div>
+    </section>
+    <section class="welcome" id="welcome" aria-labelledby="welcome-title" hidden>
+      <div class="welcome-head">
+        <h2 id="welcome-title">New here? How it works</h2>
+        <button class="welcome-x" id="welcome-close" type="button" aria-label="Close">×</button>
+      </div>
+      <ol class="welcome-steps">
+        <li><b>Plan</b><span>Type where you're going. You get a route guide with potholes, risky spots, best lanes, tolls and fuel stops.</span></li>
+        <li><b>Check</b><span>See what drivers reported in the last few days. Tap "Still there" or "Gone now" to keep reports honest.</span></li>
+        <li><b>Report</b><span>Passenger, or stopped? One tap tells the next driver what's ahead. Never while driving.</span></li>
+      </ol>
+      <p class="welcome-note">No app to download. It works in your phone's browser, and you can <button class="linkbtn welcome-link" type="button" data-install>add it to your home screen</button> so it opens like an app.</p>
+      <div class="welcome-actions">
+        <button class="btn small" id="welcome-try" type="button">Try Durban to Joburg</button>
+        <button class="welcome-ok" id="welcome-ok" type="button">Got it</button>
+      </div>
+    </section>
+    <form class="planner" id="planner" novalidate>
+      <div class="field sg-wrap"><label for="p-from">From</label><input type="text" id="p-from" placeholder="Durban" autocomplete="off" maxlength="60" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sg-from"><div class="suggest" id="sg-from" role="listbox" hidden></div></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="field sg-wrap"><label for="p-to">To</label><input type="text" id="p-to" placeholder="Johannesburg" autocomplete="off" maxlength="60" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sg-to"><div class="suggest" id="sg-to" role="listbox" hidden></div></div>
+      <button class="btn" id="p-go" type="submit">What to look out for</button>
+    </form>
+    <div class="popular" id="popular"><span class="eyebrow">Popular</span></div>
+    <label class="guides"><span class="eyebrow" id="guides-label">All route guides</span>
+      <select id="p-guides"><option value="">Choose a route…</option></select>
+    </label>
+  </div>
+</header>
+
+<div class="setup-banner" id="setup-banner" hidden>
+  <div class="wrap">This site isn't connected to its database yet, so you're seeing an example report. Follow step 2 in README.md to connect it.</div>
+</div>
+
+<section class="briefing-band" id="briefing" aria-live="polite">
+  <div class="wrap" id="briefing-body">
+    <div class="brief-head"><div style="display:grid;gap:6px;min-width:0"><div class="eyebrow">Route guide</div><h2>Dundee to Nqutu</h2>
+      <div class="facts"><span>Route <b>R68 east</b></span><span>About <b>50 km</b></span><span>Drive <b>45 minutes to 1 hour</b></span></div></div></div>
+    <p style="margin:0;max-width:70ch">A short rural run on the R68 through battlefields country.</p>
+    
+    <div class="live"><h3>From drivers, last 3 days</h3><p class="note">Loading driver reports…</p></div>
+    <div class="brief-grid"><div class="before"><h3>Before you leave</h3><ul><li>Fill up in Dundee; there&#39;s little in between.</li><li>Drive in daylight if you can: livestock and pedestrians are common and there are few streetlights.</li><li>Minibus taxis stop often, so keep a safe following distance.</li></ul></div>
+      <div class="strip"><div class="leg"><h3>Dundee to Nqutu</h3><div class="items"><div class="item k-lane"><div class="item-top"><span class="item-title">Leaving Dundee</span><span class="pill">Lane advice</span><span class="src src-general">Road know-how</span></div><p>The R68 and R33 share the road for the first few kilometres east of Dundee. Stay on the R68 where the R33 splits off towards Vryheid.</p></div><div class="item k-hazard"><div class="item-top"><span class="item-title">Livestock and pedestrians</span><span class="pill">Hazard</span><span class="src src-general">Road know-how</span></div><p>Cattle, goats and people on or beside the road, especially near villages and at dusk.</p></div><div class="item k-hazard"><div class="item-top"><span class="item-title">Rough sections</span><span class="pill">Hazard</span><span class="src src-general">Road know-how</span></div><p>Potholes and broken edges in places. Slow down and don&#39;t swerve suddenly.</p></div><div class="item k-safety"><div class="item-top"><span class="item-title">Taxis stopping</span><span class="pill">Safety</span><span class="src src-general">Road know-how</span></div><p>Minibus taxis pull over to drop off and pick up, sometimes without warning. Keep a gap and don&#39;t overtake on blind rises.</p></div><div class="item k-tip"><div class="item-top"><span class="item-title">Battlefields</span><span class="pill">Tip</span><span class="src src-general">Road know-how</span></div><p>Isandlwana and Rorke&#39;s Drift are signposted in this area if you&#39;re visiting the battlefields.</p></div></div></div></div></div></div>
+</section>
+
+<section class="quick-band">
+  <div class="wrap">
+    <div class="quick-head">
+      <div>
+        <div class="eyebrow">Spotted a hazard? One tap to report</div>
+        <p class="note">Passengers only, or once you've stopped. Never while driving.</p>
+        <p class="note">A tap posts the hazard and road. To add the lane, how bad it is or a tip, use "Add a detailed report" further down.</p>
+      </div>
+      <label class="field road-field"><span>Road you're on</span>
+        <span class="inline">
+          <input type="text" id="qk-road" placeholder="e.g. N3 Northbound" maxlength="40">
+          <button class="btn ghost small" id="qk-locate" type="button">Use my location</button>
+        </span>
+      </label>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <p class="note" id="qk-status" hidden></p>
+    <p class="note">Your location is only used when you tap a button that asks for it. Reports show it rounded to about 100 m, never your exact spot. You can always type the road instead.</p>
+  </div>
+</section>
+
+<section class="map-band">
+  <div class="wrap">
+    <div class="map-head">
+      <h2>Reports on the map</h2>
+      <span class="note">Reports posted with a location show here. Tap a pin for details. No pins doesn't mean no hazards.</span>
+    </div>
+    <div id="map" role="region" aria-label="Map of road reports"></div>
+  </div>
+</section>
+
+<div class="search-band">
+  <div class="wrap">
+    <label for="q">Search reports</label>
+    <input type="text" id="q" placeholder="Road or area, e.g. N1, M1 North, William Nicol" autocomplete="off">
+    <div class="chips" id="age-chips" role="group" aria-label="How recent">
+      <button class="chip" data-age="1" aria-pressed="false" type="button">Today</button>
+      <button class="chip" data-age="3" aria-pressed="true" type="button">3 days</button>
+      <button class="chip" data-age="14" aria-pressed="false" type="button">2 weeks</button>
+      <button class="chip" id="near-me" aria-pressed="false" type="button">Near me</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="side">
+      <details class="panel more" id="detail-panel">
+        <summary>Add a detailed report</summary>
+        <form id="form" novalidate>
+          <div class="row2">
+            <label class="field"><span>Road</span><input type="text" id="f-road" placeholder="N1" maxlength="40" required></label>
+            <label class="field"><span>Direction</span>
+              <select id="f-dir">
+                <option value="">Both / n.a.</option><option>Northbound</option><option>Southbound</option><option>Eastbound</option><option>Westbound</option>
+              </select>
+            </label>
+          </div>
+          <label class="field"><span>Where exactly</span><input type="text" id="f-where" placeholder="Between Rivonia and Malibongwe off-ramps" maxlength="90"></label>
+          <label class="check-row"><input type="checkbox" id="f-geo"> <span>Pin it to my current location (shown rounded to about 100 m)</span></label>
+          <div class="field"><span>What's there</span><div class="seg" id="f-type" role="group" aria-label="Report type"></div></div>
+          <div class="field"><span>Best lane</span><div class="seg" id="f-lane" role="group" aria-label="Lane advice"></div></div>
+          <div class="field"><span>How bad</span><div class="seg" id="f-sev" role="group" aria-label="Severity"></div></div>
+          <div class="field"><span>How your drive went</span><div class="seg" id="f-trip" role="group" aria-label="Trip rating"></div></div>
+          <label class="field"><span>Tip for the next driver</span>
+            <textarea id="f-note" maxlength="400" placeholder="Big pothole just after the bridge in the right lane. Move left before the overhead sign."></textarea>
+          </label>
+          <button class="btn" id="f-submit" type="submit">Post report</button>
+          <div class="msg" id="f-msg" hidden></div>
+        </form>
+      </details>
+
+      <div class="panel official">
+        <div><div class="eyebrow">Official sources</div><h2>Check before you go</h2></div>
+        <ul>
+          <li><a href="https://www.nra.co.za" target="_blank" rel="noopener">SANRAL traffic advisories</a><span class="note">National road closures and major incidents.</span></li>
+          <li><a href="https://x.com/N3Route" target="_blank" rel="noopener">@N3Route on X</a><span class="note">Live N3 updates, Durban to Joburg.</span></li>
+          <li><span>N3 Helpline (24h): <a class="num" href="tel:0800634357">0800 63 43 57</a></span><span class="note">Breakdowns or problems on the N3 toll route.</span></li>
+          <li><span>Emergency from a cellphone: <a class="num" href="tel:112">112</a></span><span class="note">Police <a href="tel:10111">10111</a> · Ambulance <a href="tel:10177">10177</a></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="feed-col">
+      <div class="check" id="check" aria-live="polite"></div>
+      <div class="feed-head">
+        <h2 id="feed-title">Latest from the road</h2>
+        <span class="eyebrow" id="feed-count"></span>
+      </div>
+      <div class="feed" id="feed"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Hamba Kahle Roads, a Superfan project · <span class="num">officialsuperfanhq@gmail.com</span> · Reports come from drivers and may be out of date. Always obey road signs and officials.</span>
+    <nav class="foot-links" aria-label="Site information">
+      <a class="wa-follow" href="https://whatsapp.com/channel/0029Vb9aVQIFCCoRCOsyE62f" target="_blank" rel="noopener">WhatsApp road updates</a>
+      <button class="linkbtn" id="feedback-open" type="button">Send feedback</button>
+      <a href="about.html">About</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <button class="linkbtn" id="install" type="button" data-install hidden>Add to home screen</button>
+    </nav>
+  </div>
+</footer>
+
+<button class="feedback-tab" id="feedback-tab" type="button">Feedback</button>
+
+<dialog id="feedback">
+  <form method="dialog" id="feedback-form" class="dialog-body">
+    <h2>Send feedback</h2>
+    <p class="note">Something wrong in a route guide, a bug, or an idea? Tell us. Anyone can send this, no sign-in needed.</p>
+    <div class="field"><span>What's it about?</span><div class="seg" id="fb-kind" role="group" aria-label="Feedback type"></div></div>
+    <label class="field"><span>Your message</span><textarea id="fb-text" maxlength="1500" required placeholder="e.g. The N3 guide says the Mooi Toll Plaza is near Estcourt, but it's at Mooi River."></textarea></label>
+    <label class="field"><span>Email, if you'd like a reply (optional)</span><input type="email" id="fb-email" autocomplete="email" maxlength="120"></label>
+    <div class="msg" id="fb-msg" hidden></div>
+    <div class="dialog-actions">
+      <button class="btn ghost" type="button" id="fb-cancel">Cancel</button>
+      <button class="btn" id="fb-send" type="submit">Send</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="install-help">
+  <div class="dialog-body">
+    <h2>Add it to your home screen</h2>
+    <p class="note">Hamba Kahle Roads is a website, so there's nothing to download from an app store. Add it to your home screen and it opens full-screen like an app.</p>
+    <div id="install-steps"></div>
+    <div class="dialog-actions"><button class="btn" type="button" id="install-close">Got it</button></div>
+  </div>
+</dialog>
+
+<dialog id="flag">
+  <form method="dialog" id="flag-form" class="dialog-body">
+    <h2>Flag this report</h2>
+    <p class="note">Flags are private. We hide the report for you straight away, and from everyone once a few drivers flag it.</p>
+    <div class="field"><span>What's wrong with it?</span><div class="seg" id="flag-reason" role="group" aria-label="Reason"></div></div>
+    <div class="msg" id="flag-msg" hidden></div>
+    <div class="dialog-actions">
+      <button class="btn ghost" type="button" id="flag-cancel">Cancel</button>
+      <button class="btn" id="flag-send" type="submit">Flag it</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="signin">
+  <form method="dialog" id="signin-form" class="dialog-body">
+    <h2>Sign in to post</h2>
+    <p class="note">We'll email you a sign-in link and a code. No password needed. By signing in you agree to our <a href="terms.html" target="_blank">terms</a> and <a href="privacy.html" target="_blank">privacy notice</a>.</p>
+    <label class="field"><span>Email</span><input type="email" id="si-email" required autocomplete="email"></label>
+    <label class="field"><span>Name other drivers see (optional)</span><input type="text" id="si-name" maxlength="40" placeholder="e.g. Thabo from Midrand"></label>
+    <div class="msg" id="si-msg" hidden></div>
+    <div class="code-step" id="si-code-step" hidden>
+      <label class="field"><span>Code from the email</span>
+        <input type="text" id="si-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" pattern="[0-9 ]*">
+      </label>
+      <button class="btn" id="si-verify" type="button">Sign in with code</button>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn ghost" value="cancel" type="button" id="si-cancel">Cancel</button>
+      <button class="btn" id="si-send" type="submit">Email me a link</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" hidden role="status"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
+
+<script src="config.js"></script>
+<script src="routes.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

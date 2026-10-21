@@ -2,9 +2,20 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "hamba-kahle-roads.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "hamba-kahle-roads.vercel.app"
+        }
+      ],
       "destination": "https://hambakahleroads.co.za/:path*",
       "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/guides/:slug",
+      "destination": "/guides/:slug.html"
     }
   ]
 }
