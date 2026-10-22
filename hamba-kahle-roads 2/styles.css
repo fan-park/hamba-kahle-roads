@@ -287,6 +287,10 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 #si-code { font-family: var(--mono); font-size: 22px; letter-spacing: 0.2em; text-align: center; }
 
 .brand-h1 { margin: 0; font: inherit; }
+.when { border: 1px solid var(--line, rgba(0,0,0,.12)); border-left: 4px solid var(--marking); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; max-width: 78ch; }
+.when h3 { margin: 0; }
+.when ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+.when .note { margin: 0; font-size: 12.5px; }
 .reverse-note { border-left: 3px solid var(--marking); padding-left: 10px; max-width: 70ch; }
 
 /* Home-screen install help */

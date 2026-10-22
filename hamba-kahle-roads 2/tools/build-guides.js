@@ -28,6 +28,7 @@ function guideHtml(g) {
       <div class="facts">${g.route ? `<span>Route <b>${esc(g.route)}</b></span>` : ""}${g.distanceKm ? `<span>About <b>${Math.round(g.distanceKm).toLocaleString("en-ZA")} km</b></span>` : ""}${g.driveTime ? `<span>Drive <b>${esc(g.driveTime)}</b></span>` : ""}</div></div></div>
     ${g.summary ? `<p style="margin:0;max-width:70ch">${esc(g.summary)}</p>` : ""}
     ${g.reverseNote ? `<p class="note reverse-note">${esc(g.reverseNote)}</p>` : ""}
+    ${g.when && g.when.length ? `<div class="when"><h3>When to drive</h3><ul>${g.when.map(w => `<li>${esc(w)}</li>`).join("")}</ul><p class="note">Typical patterns, not guarantees. Check official sources before you go.</p></div>` : ""}
     <div class="live"><h3>From drivers, last 3 days</h3><p class="note">Loading driver reports…</p></div>
     <div class="brief-grid"><div class="before"><h3>Before you leave</h3><ul>${g.before.map(b => `<li>${esc(b)}</li>`).join("")}</ul></div>
       <div class="strip">${g.legs.map(l => `<div class="leg"><h3>${esc(l.name)}</h3><div class="items">${l.items.map(item).join("")}</div></div>`).join("")}</div></div>`;

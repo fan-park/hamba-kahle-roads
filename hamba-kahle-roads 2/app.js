@@ -773,6 +773,11 @@ function refreshGuideLive() {
   if (box) box.innerHTML = guideLiveHtml(live);
   if (count) count.innerHTML = guideCountText(live);
 }
+function whenHtml(g) {
+  if (!g.when || !g.when.length) return "";
+  return `<div class="when"><h3>When to drive</h3><ul>${g.when.map(w => `<li>${esc(w)}</li>`).join("")}</ul><p class="note">Typical patterns, not guarantees. Check official sources before you go.</p></div>`;
+}
+
 function renderGuide(g, original) {
   state.guide = { original };
   const live = reportsOnRoute(original);
@@ -798,6 +803,7 @@ function renderGuide(g, original) {
     </div>
     ${g.summary ? `<p style="margin:0;max-width:70ch">${esc(g.summary)}</p>` : ""}
     ${g.reverseNote ? `<p class="note reverse-note">${esc(g.reverseNote)}</p>` : ""}
+    ${whenHtml(g)}
     <div class="live" id="g-live">${guideLiveHtml(live)}</div>
     <div class="brief-grid">
       <div class="before">

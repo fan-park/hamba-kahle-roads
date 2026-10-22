@@ -75,6 +75,7 @@ Open `routes.js`. Each guide has:
 - `a` and `b`: the two ends, using the place groups at the top of the file (`HKR_PLACES`). Add nicknames there so "Jozi" or "PE" match.
 - `roads` and `places`: used to pull matching driver reports into the guide.
 - `before`: the "Before you leave" checklist.
+- "When to drive" tips for long-distance guides live at the bottom of `routes.js`. The December dates are for one holiday season, so update them every year (around October, once the school calendar is out).
 - `legs`: sections of the trip, each named "Town to Town", with items. Each item has a `kind` (`hazard`, `safety`, `roadworks`, `weather`, `lane`, `toll`, `fuel` or `tip`), a short `title` and a one-line `detail`.
 
 Write each guide in one direction only; the site reverses it automatically for the return trip. Word items so they make sense both ways ("steep pass between X and Y" rather than "climb into Y").
