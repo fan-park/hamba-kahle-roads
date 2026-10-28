@@ -33,22 +33,18 @@
       <h1 class="brand-h1"><a class="brand" href="./"><img class="brand-mark" src="icons/logo-mark.svg" alt="" width="44" height="44"><span class="brand-text">Hamba Kahle <span>Roads</span></span></a></h1>
       <div class="account" id="account"></div>
     </div>
-    <p class="tag"><em>Hamba kahle</em> means "go well". Tell us your trip and get a list of what to look out for, from other drivers and road know-how your maps app won't give you.</p>
+    <p class="tag"><em>Hamba kahle</em> means "go well". Tell us where you're driving and we'll show you what to watch for on the way.</p>
     <section class="mytrips" id="mytrips" aria-labelledby="mytrips-title" hidden>
       <div class="mytrips-head"><h2 id="mytrips-title">Your trips</h2><span class="mytrips-note">Saved on this device</span></div>
       <div class="mytrips-list" id="mytrips-list"></div>
     </section>
     <section class="welcome" id="welcome" aria-labelledby="welcome-title" hidden>
       <div class="welcome-head">
-        <h2 id="welcome-title">New here? How it works</h2>
+        <h2 id="welcome-title">New here?</h2>
         <button class="welcome-x" id="welcome-close" type="button" aria-label="Close">×</button>
       </div>
-      <ol class="welcome-steps">
-        <li><b>Plan</b><span>Type where you're going. You get a route guide with potholes, risky spots, best lanes, tolls and fuel stops.</span></li>
-        <li><b>Check</b><span>See what drivers reported in the last few days. Tap "Still there" or "Gone now" to keep reports honest.</span></li>
-        <li><b>Report</b><span>Passenger, or stopped? One tap tells the next driver what's ahead. Never while driving.</span></li>
-      </ol>
-      <p class="welcome-note">No app to download. It works in your phone's browser, and you can <button class="linkbtn welcome-link" type="button" data-install>add it to your home screen</button> so it opens like an app.</p>
+      <p class="welcome-text">Pick a trip and you'll see the potholes, risky stretches, tolls, fuel stops and best lanes, plus anything other drivers have spotted lately. Seen something yourself? One tap tells the next driver.</p>
+      <p class="welcome-note">No app needed: <button class="linkbtn welcome-link" type="button" data-install>add it to your home screen</button>.</p>
       <div class="welcome-actions">
         <button class="btn small" id="welcome-try" type="button">Try Durban to Joburg</button>
         <button class="welcome-ok" id="welcome-ok" type="button">Got it</button>
@@ -87,9 +83,8 @@
   <div class="wrap">
     <div class="quick-head">
       <div>
-        <div class="eyebrow">Spotted a hazard? One tap to report</div>
-        <p class="note">Passengers only, or once you've stopped. Never while driving.</p>
-        <p class="note">A tap posts the hazard and road. To add the lane, how bad it is or a tip, use "Add a detailed report" further down.</p>
+        <h2 class="quick-title">Spotted something on the road?</h2>
+        <p class="note">Passengers, or once you've stopped. Never while driving. Locations are rounded to about 100 m.</p>
       </div>
       <label class="field road-field"><span>Road you're on</span>
         <span class="inline">
@@ -100,15 +95,14 @@
     </div>
     <div class="tiles" id="tiles"></div>
     <p class="note" id="qk-status" hidden></p>
-    <p class="note">Your location is only used when you tap a button that asks for it. Reports show it rounded to about 100 m, never your exact spot. You can always type the road instead.</p>
   </div>
 </section>
 
-<section class="map-band">
+<section class="map-band" hidden>
   <div class="wrap">
     <div class="map-head">
       <h2>Reports on the map</h2>
-      <span class="note">Reports posted with a location show here. Tap a pin for details. No pins doesn't mean no hazards.</span>
+      <span class="note">Tap a pin for details.</span>
     </div>
     <div id="map" role="region" aria-label="Map of road reports"></div>
   </div>

@@ -314,6 +314,11 @@ function renderMap(list) {
   if (!map) return;
   layer.clearLayers();
   const pts = [];
+  // Only show the map once there's something on it: an empty map makes the site look empty.
+  const band = document.querySelector(".map-band");
+  const hasPins = list.some(r => typeof r.lat === "number" && typeof r.lng === "number");
+  const show = hasPins || !!state.near;
+  if (band && band.hidden === show) { band.hidden = !show; if (show) map.invalidateSize(); }
   list.forEach(r => {
     if (typeof r.lat !== "number" || typeof r.lng !== "number") return;
     const stale = r.cleared > r.confirms;
@@ -352,7 +357,7 @@ function renderCheck(list) {
   }
   if (!real.length) {
     el.innerHTML = `<div><div class="eyebrow">Drive check</div><h2>${where}</h2></div>
-      <p class="note" style="color:var(--asphalt-muted)">No reports in this window. That doesn't mean the road is clear, only that nobody has reported anything yet. If you've driven it recently, add what you saw so the next driver knows.</p>
+      <p class="note" style="color:var(--asphalt-muted)">Nothing reported yet, which doesn't mean the road is clear. Driven it lately? Tell the next driver.</p>
       <div><button class="btn small" type="button" id="check-report">Post a quick report</button></div>`;
     $("check-report").onclick = () => {
       document.querySelector(".quick-band").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -427,7 +432,7 @@ function render() {
   }
   const why = !state.loaded ? "Loading reports…" :
     state.reports.some(r => !r.example) ? "Nothing matches in this time window. Try a wider window or a shorter search." :
-    "No reports yet. Be the first: tap a quick report next time you're on the road. This is what a report looks like:";
+    "No reports yet. Here's what one looks like:";
   feed.innerHTML = `<div class="empty"><p class="note" style="color:var(--ink)">${why}</p>${state.reports.some(r => !r.example) ? "" : card(EXAMPLE)}</div>`;
 }
 
