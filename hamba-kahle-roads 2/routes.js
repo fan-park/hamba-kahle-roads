@@ -1116,6 +1116,7 @@ window.HKR_ROUTE_PATHS = (() => {
     jamestown: [-31.12, 26.81], komani: [-31.90, 26.88], cathcart: [-32.30, 27.14], stutterheim: [-32.57, 27.42],
     senekal: [-28.32, 27.62], paulroux: [-28.30, 27.95], bethlehem: [-28.23, 28.31], kestell: [-28.31, 28.70]
   };
+  window.HKR_POINTS = P;
   const path = (...k) => k.map(x => { if (!P[x]) throw new Error("No coordinates for " + x); return P[x]; });
   const LONG = 25, SUBURB = 6;
   return {

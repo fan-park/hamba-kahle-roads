@@ -313,3 +313,13 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 .trip-status.new { color: var(--marking); font-weight: 700; }
 .trip-x { background: none; border: 0; border-left: 1px solid #46504c; color: var(--asphalt-muted); font-size: 18px; padding: 0 10px; cursor: pointer; }
 @media (max-width: 700px) { .mytrips-list { flex-direction: column; } .trip-open { flex: 1; } }
+
+/* Use my location */
+.label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.here-btn { color: var(--marking); font-size: 13px; font-weight: 600; }
+.here-btn:disabled { opacity: .7; cursor: default; }
+.here-note { margin: 0; max-width: 70ch; border-left: 3px solid var(--marking); padding-left: 10px; font-weight: 600; }
+.here-pill { display: inline-block; background: var(--marking); color: var(--marking-ink); font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; letter-spacing: .02em; }
+.leg.passed { opacity: .55; }
+.leg.passed .items { display: none; }
+.behind { font-size: 12px; font-weight: 600; color: var(--muted); margin-left: 6px; }

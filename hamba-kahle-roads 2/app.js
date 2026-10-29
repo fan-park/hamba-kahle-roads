@@ -72,7 +72,7 @@ async function roadAt(pos) {
 }
 
 /* ---------- State ---------- */
-const state = { reports: [], myVotes: new Map(), myReports: new Set(), myFlags: new Set(), guide: null, loadError: false, user: null, q: "", ageDays: 3, near: null, loaded: false };
+const state = { reports: [], myVotes: new Map(), myReports: new Set(), myFlags: new Set(), guide: null, loadError: false, user: null, q: "", ageDays: 3, near: null, here: null, loaded: false };
 const form = { type: "pothole", lane: "", sev: "slow", trip: "" };
 // Public report fields. The poster's user ID is deliberately not shown to anyone.
 const REPORT_COLUMNS = "id,created_at,author_name,road,direction,location_note,type,severity,lane,trip,note,lat,lng,quick,confirms,cleared";
@@ -680,10 +680,11 @@ $("mytrips-list").addEventListener("click", e => {
   if (route) openGuide(route, t.rev, false);
 });
 
-function openGuide(route, reversed, keepInputs) {
+function openGuide(route, reversed, keepInputs, here) {
   if (briefCtl) { briefCtl.abort(); briefCtl = null; }
   rememberTrip(route, reversed);
   const g = orient(route, reversed);
+  if (here) markProgress(g, here);
   if (!keepInputs) {
     const a = placeLabel(route.a[0]), b = placeLabel(route.b[0]);
     $("p-from").value = reversed ? b : a; $("p-to").value = reversed ? a : b;
@@ -698,6 +699,7 @@ function openGuide(route, reversed, keepInputs) {
 async function getBriefing(refresh) {
   const from = $("p-from").value.trim(), to = $("p-to").value.trim();
   if (!from || !to) { (from ? $("p-to") : $("p-from")).focus(); return; }
+  if (state.here && from.startsWith("My location")) return tripFromHere(state.here, to);
   const hit = findGuide(from, to);
   if (hit) { openGuide(hit.route, hit.reversed, true); return; }
   briefBand.hidden = false;
@@ -707,6 +709,104 @@ async function getBriefing(refresh) {
   renderNoGuide(from, to);
   briefBand.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+
+/* ---------- Trip from where you are ---------- */
+/* "Use my location" fills From with the driver's position. If they're already part-way along a guide's
+   route towards where they're going, that guide opens from where they are: sections behind them fold away. */
+const POINTS = window.HKR_POINTS || {};
+const compactName = s => norm(s).replace(/[^a-z]/g, "");
+function pointFor(name) {
+  const c = compactName(name);
+  if (POINTS[c]) return { lat: POINTS[c][0], lng: POINTS[c][1] };
+  const k = placeKey(name);
+  return k && POINTS[k] ? { lat: POINTS[k][0], lng: POINTS[k][1] } : null;
+}
+/* Where a point sits along a path: km from the path's start to the closest spot on it, how far off it is, and the path's length. */
+function alongPath(pt, path) {
+  const kx = 111.32 * Math.cos(pt.lat * Math.PI / 180), ky = 110.57;
+  let cum = 0, best = { off: Infinity, along: 0 };
+  for (let i = 0; i < path.length - 1; i++) {
+    const ax = (path[i][1] - pt.lng) * kx, ay = (path[i][0] - pt.lat) * ky;
+    const bx = (path[i + 1][1] - pt.lng) * kx, by = (path[i + 1][0] - pt.lat) * ky;
+    const dx = bx - ax, dy = by - ay, len2 = dx * dx + dy * dy, len = Math.sqrt(len2);
+    const t = len2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len2)) : 0;
+    const off = Math.hypot(ax + t * dx, ay + t * dy);
+    if (off < best.off) best = { off, along: cum + t * len };
+    cum += len;
+  }
+  return { ...best, total: cum };
+}
+async function townNear(pos) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=12&lat=${pos.lat}&lon=${pos.lng}`, { headers: { "Accept-Language": "en" } });
+    if (r.ok) { const a = (await r.json()).address || {}; const t = a.town || a.city || a.village || a.suburb || a.municipality || ""; if (t) return t.slice(0, 40); }
+  } catch (_) {}
+  let best = "", bestKm = 30;
+  for (const k of Object.keys(PLACES)) { const p = POINTS[k]; if (!p) continue; const d = km(pos, { lat: p[0], lng: p[1] }); if (d < bestKm) { bestKm = d; best = placeLabel(k); } }
+  return best;
+}
+/* Fold away the sections already driven and mark the one the driver is on. */
+function markProgress(g, here) {
+  const pos = name => { const p = pointFor(name); if (!p) return null; const a = alongPath(p, here.path); const d = here.reversed ? a.total - a.along : a.along; return a.off < 40 ? d : null; };
+  const now = here.reversed ? here.total - here.along : here.along;
+  let marked = false;
+  g.legs = g.legs.map(l => {
+    const [from, to] = l.name.split(" to ");
+    const s = from ? pos(from) : null, e = to ? pos(to) : null;
+    if (e != null && e <= now + 2) return { ...l, passed: true };
+    if (!marked && s != null && s <= now + 2) { marked = true; return { ...l, here: true }; }
+    return l;
+  });
+  const dest = g.title.split(" to ").pop();
+  const left = Math.max(10, Math.round(here.left * 1.05 / 10) * 10);
+  g.hereNote = `You're ${here.town ? "near " + here.town : "on this route"}, roughly ${left} km from ${dest}.` + (g.legs.some(l => l.passed) ? " Sections behind you are folded away." : "");
+}
+function tripFromHere(here, to) {
+  const t = placeKey(to);
+  if (!t) { $("p-to").focus(); toast("Type where you're heading, e.g. Durban."); return; }
+  // Still in (or right next to) a town a guide starts from: use that guide as normal.
+  let start = null, startKm = Infinity;
+  for (const k of Object.keys(PLACES)) { const p = POINTS[k]; if (!p) continue; const d = km(here, { lat: p[0], lng: p[1] }); if (d < startKm) { startKm = d; start = k; } }
+  if (startKm <= 15 && start !== t) { const hit = findGuideKeys(start, t); if (hit) { openGuide(hit.route, hit.reversed, true); return; } }
+  // Part-way along a guide's route, heading for the destination.
+  const targets = withParents(t), destPt = POINTS[t] ? { lat: POINTS[t][0], lng: POINTS[t][1] } : null;
+  let best = null;
+  ROUTES.forEach((r, idx) => {
+    const corridor = ROUTE_PATHS[r.id]; if (!corridor) return;
+    for (const reversed of [false, true]) {
+      if (!targets.some(k => (reversed ? r.a : r.b).includes(k))) continue;
+      for (const path of corridor.paths) {
+        const a = alongPath(here, path);
+        if (a.off > corridor.tol) continue;
+        // Distance still to go: to the destination town itself if we know where it is, else to the end of the route.
+        const d = destPt ? alongPath(destPt, path) : null;
+        const left = d && d.off < 40 ? Math.abs(d.along - a.along) : (reversed ? a.along : a.total - a.along);
+        // Several guides can share a road (Harrismith is on both the Joburg and Bloemfontein guides to Durban):
+        // when they're about as close, prefer the main one, listed first.
+        if (!best || a.off < best.off - 3) best = { route: r, reversed, path, ...a, left, town: here.town, idx };
+      }
+    }
+  });
+  if (best) { openGuide(best.route, best.reversed, true, best); return; }
+  briefBand.hidden = false;
+  state.guide = null;
+  if (location.pathname !== "/" || location.hash) { try { history.replaceState(null, "", "/"); } catch (_) {} }
+  renderNoGuide(here.town || "Where you are", to);
+  briefBand.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("p-here").onclick = async () => {
+  const btn = $("p-here"), label = btn.textContent;
+  btn.disabled = true; btn.textContent = "Finding you…";
+  const pos = await getPosition(10000);
+  if (!pos) { btn.disabled = false; btn.textContent = label; toast("Couldn't find your location. Allow location for this site, or type where you are."); return; }
+  const town = await townNear(pos);
+  state.here = { ...pos, town };
+  $("p-from").value = town ? `My location (near ${town})` : "My location";
+  btn.disabled = false; btn.textContent = label;
+  if ($("p-to").value.trim()) getBriefing(); else $("p-to").focus();
+};
+$("p-from").addEventListener("input", () => { state.here = null; });
 
 /* Sharing */
 const SITE_URL = location.origin + "/";
@@ -808,15 +908,16 @@ function renderGuide(g, original) {
     </div>
     ${g.summary ? `<p style="margin:0;max-width:70ch">${esc(g.summary)}</p>` : ""}
     ${g.reverseNote ? `<p class="note reverse-note">${esc(g.reverseNote)}</p>` : ""}
-    ${whenHtml(g)}
+    ${g.hereNote ? `<p class="here-note">${esc(g.hereNote)}</p>` : ""}
+    ${g.hereNote ? "" : whenHtml(g)}
     <div class="live" id="g-live">${guideLiveHtml(live)}</div>
     <div class="brief-grid">
-      <div class="before">
+      <div class="before"${g.hereNote ? " hidden" : ""}>
         <h3>Before you leave</h3>
         <ul>${g.before.map((b, i) => `<li><label><input type="checkbox" id="pre-${i}"><span>${esc(b)}</span></label></li>`).join("")}</ul>
       </div>
       <div class="strip">
-        ${g.legs.map(l => `<div class="leg"><h3>${esc(l.name)}</h3><div class="items">${l.items.map(it => itemHtml(it, "general")).join("")}</div></div>`).join("")}
+        ${g.legs.map(l => `<div class="leg${l.passed ? " passed" : ""}"><h3>${esc(l.name)}${l.here ? ` <span class="here-pill">You're here</span>` : ""}${l.passed ? ` <span class="behind">behind you</span>` : ""}</h3><div class="items">${l.items.map(it => itemHtml(it, "general")).join("")}</div></div>`).join("")}
       </div>
     </div>
     <p class="note">"Road know-how" is general guidance and isn't live. Check the official sources for closures before you leave.</p>
