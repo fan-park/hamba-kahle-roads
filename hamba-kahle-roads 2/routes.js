@@ -24,7 +24,7 @@ window.HKR_PLACES = {
   pmb:         ["pietermaritzburg", "pmb", "maritzburg", "msunduzi", "hilton", "howick", "camperdown", "cato ridge"],
   capetown:    ["cape town", "ct", "kaapstad", "cape town cbd", "cape town city centre", "city bowl", "sea point", "green point", "camps bay", "tamboerskloof", "gardens", "cape town city", "foreshore", "woodstock", "v&a waterfront", "waterfront"],
   ctairport:   ["cape town airport", "cape town international", "cape town international airport", "cpt", "ct airport"],
-  bellville:   ["bellville", "durbanville", "brackenfell", "kuils river", "parow", "goodwood", "tyger valley", "northern suburbs", "kraaifontein", "edgemead", "plattekloof"],
+  bellville:   ["bellville", "brackenfell", "kuils river", "parow", "goodwood", "tyger valley", "northern suburbs", "kraaifontein", "edgemead", "plattekloof"],
   southern:    ["southern suburbs", "claremont", "rondebosch", "newlands", "wynberg", "constantia", "tokai", "kenilworth", "bergvliet", "plumstead", "observatory", "muizenberg", "retreat"],
   khayelitsha: ["khayelitsha", "mitchells plain", "mitchell's plain", "philippi", "gugulethu", "nyanga", "blue downs", "delft"],
   tableview:   ["table view", "blouberg", "bloubergstrand", "milnerton", "parklands", "sunningdale", "big bay", "melkbosstrand", "west beach"],
@@ -40,6 +40,7 @@ window.HKR_PLACES = {
   eastlondon:  ["east london", "el", "buffalo city", "gonubie"],
   gardenroute: ["garden route", "knysna", "george", "wilderness", "plettenberg bay", "plett", "mossel bay", "sedgefield"],
   hermanus:    ["hermanus", "overberg", "kleinmond", "stanford", "gansbaai"],
+  durbanville: ["durbanville", "durbanville hills", "durbanville wine valley", "durbanville winelands", "loch lynne", "lochlynne", "loch lynne wine estate", "loch lynne estate", "diemersdal", "meerendal", "nitida", "de grendel", "hillcrest estate", "altydgedacht", "bloemendal", "d'aria"],
   stellenbosch:["stellenbosch", "stellies", "winelands", "somerset west"],
   langebaan:   ["langebaan", "west coast", "west coast national park", "saldanha", "paternoster", "velddrif", "yzerfontein", "jacobsbaai"],
   dundee:      ["dundee", "glencoe", "dannhauser", "wasbank"],
@@ -65,7 +66,7 @@ window.HKR_PLACE_LABELS = {
   khayelitsha: "Khayelitsha & Mitchells Plain", tableview: "Table View",
   bloem: "Bloemfontein", polokwane: "Polokwane", kruger: "Kruger Park (Malelane)", panorama: "Dullstroom & Graskop", suncity: "Sun City",
   gqeberha: "Gqeberha (Port Elizabeth)", drakensberg: "Drakensberg", ballito: "Ballito", southcoast: "South Coast (Margate)",
-  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", langebaan: "Langebaan (West Coast)",
+  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", durbanville: "Durbanville Winelands", langebaan: "Langebaan (West Coast)",
   dundee: "Dundee", nqutu: "Nqutu", stlucia: "St Lucia"
 };
 
@@ -1051,6 +1052,36 @@ window.HKR_ROUTES = [
       { kind: "hazard", title: "Steep hills around Pinetown", detail: "Loaded trucks crawl uphill and brake hard going down. Keep a big gap." }
     ]}
   ]
+},
+/* 39 */ {
+  id: "capetown-durbanville", a: ["capetown", "ctairport"], b: ["durbanville"],
+  title: "Cape Town to the Durbanville Winelands", route: "N1 to Durbanville, then Koeberg Road (M58) into the vineyards", distanceKm: 35, driveTime: "40–50 minutes",
+  roads: ["N1", "R302", "M13", "M58", "M48"], places: ["Century City", "Plattekloof", "Tyger Valley", "Bellville", "Durbanville", "Koeberg Road", "Loch Lynne", "Diemersdal", "Meerendal"],
+  summary: "A short run out on the N1, through Durbanville town, then quiet country roads to the wine farms, including Loch Lynne on Koeberg Road.",
+  before: [
+    "No toll plazas.",
+    "Agree on a designated driver if there's wine tasting or a function. Breath-test roadblocks are common on weekends.",
+    "Check your venue's directions or booking for the exact farm entrance: they can be easy to miss.",
+    "Fill up in Durbanville if you need fuel. There's nothing once you're among the farms."
+  ],
+  legs: [
+    { name: "Cape Town to Bellville", items: [
+      { kind: "lane", title: "Onto the N1", detail: "From the City Bowl and Foreshore, join the N1 heading out of town towards Paarl." },
+      { kind: "hazard", title: "Century City and Plattekloof", detail: "Queues build around the Century City and Plattekloof interchanges at peak times and on weekends near the malls." },
+      { kind: "safety", title: "Stay on the highway", detail: "Keep doors locked and don't stop on the shoulder. If you break down, pull as far left as you can and call for help." }
+    ]},
+    { name: "Bellville to Durbanville", items: [
+      { kind: "lane", title: "Turning off for Durbanville", detail: "Leave the N1 for Durbanville via the R302 (Durban Road) or the M13 past Tyger Valley. Follow your maps app for the exit that suits your farm." },
+      { kind: "hazard", title: "Tyger Valley traffic", detail: "Busy around the Tyger Valley and Willowbridge shopping area, especially on Saturday mornings." },
+      { kind: "fuel", title: "Durbanville town", detail: "Fuel, shops and ATMs in town: the last stop before the farms." }
+    ]},
+    { name: "Durbanville to the wine farms", items: [
+      { kind: "lane", title: "Koeberg Road (M58)", detail: "From the circle in Durbanville town centre, Koeberg Road heads north out of town past Loch Lynne and other farms." },
+      { kind: "hazard", title: "Narrow country roads", detail: "Two-lane roads through the vineyards, with bends, slow farm vehicles and weekend cyclists. Take it easy." },
+      { kind: "tip", title: "Farm entrances", detail: "Slow down as you get close: gates and turn-offs come up quickly, and some have a gravel driveway." },
+      { kind: "safety", title: "Driving back at night", detail: "The farm roads are dark and unlit. Watch for people walking on the verge and for other drivers who've been tasting." }
+    ]}
+  ]
 }
 ];
 
@@ -1090,6 +1121,7 @@ window.HKR_ROUTE_PATHS = (() => {
     stormsriver: [-33.97, 23.88], humansdorp: [-34.03, 24.77], jbay: [-34.05, 24.92],
     gordonsbay: [-34.16, 18.87], kleinmond: [-34.34, 19.03], grabouw: [-34.15, 19.02], houwhoek: [-34.21, 19.15],
     botrivier: [-34.23, 19.21], hermanus: [-34.418, 19.235],
+    durbanville: [-33.832, 18.648], lochlynne: [-33.795, 18.625], centurycity: [-33.89, 18.51],
     bellville: [-33.90, 18.63], kuilsriver: [-33.92, 18.68], stellenbosch: [-33.934, 18.861], ctairport: [-33.97, 18.60],
     polkadraai: [-33.96, 18.75], hospitalbend: [-33.95, 18.47], woodstock: [-33.93, 18.45],
     milnerton: [-33.87, 18.50], tableview: [-33.82, 18.49], melkbos: [-33.72, 18.44], yzerfontein: [-33.34, 18.16],
@@ -1148,6 +1180,7 @@ window.HKR_ROUTE_PATHS = (() => {
     "pinetown-dbncbd": { tol: 4, paths: [path("pinetown", "westville", "ebcloete", "mayville", "dbncbd")] },
     "umhlanga-dbncbd": { tol: 4, paths: [path("umhlanga", "virginia", "durbannorth", "mabhida", "dbncbd")] },
     "pmb-durban": { tol: SUBURB, paths: [path("pmb", "camperdown", "catoridge", "hammarsdale", "mariannhill", "pinetown", "westville", "ebcloete", "dbncbd")] },
+    "capetown-durbanville": { tol: SUBURB, paths: [path("capetown", "paarden", "centurycity", "plattekloof", "tygervalley", "durbanville", "lochlynne"), path("ctairport", "bellville", "tygervalley", "durbanville", "lochlynne")] },
     "bellville-capetown": { tol: 4, paths: [path("bellville", "tygervalley", "plattekloof", "goodwood", "paarden", "capetown")] },
     "southern-capetown": { tol: 4, paths: [path("tokai", "constantia", "wynberg", "newlands", "rondebosch", "hospitalbend", "capetown")] },
     "khayelitsha-capetown": { tol: 5, paths: [path("khayelitsha", "mitchellsplain", "ctairport", "langa", "hospitalbend", "capetown")] },
@@ -1188,6 +1221,7 @@ window.HKR_ROUTE_PATHS = (() => {
     "capetown-gqeberha": [CT_PEAK, SIRLOWRY, "December: very busy from the weekend schools close (10 to 13 December) to New Year, especially around Knysna and Plettenberg Bay, and heading home in the first half of January.", "It's an 8 to 9 hour drive with passes and long overtaking stretches, so plan to do it all in daylight."],
     "capetown-gardenroute": [CT_PEAK, SIRLOWRY, "Knysna's main road crawls in the December holidays and on long weekends. Allow extra time for the last few kilometres.", "December: busiest heading to the Garden Route from the weekend schools close (10 to 13 December) to Christmas, and back to Cape Town in the first half of January."],
     "capetown-hermanus": [CT_PEAK, "Saturday mornings heading out and Sunday afternoons heading back are the busiest. Hermanus town is busiest in December and during whale season (roughly July to November).", SIRLOWRY],
+    "capetown-durbanville": [CT_PEAK.replace("the N2 between Cape Town and Somerset West", "the N1 between Cape Town and Bellville"), "Saturday mornings are busy around the Tyger Valley shops; mid-morning and early afternoon are quieter on the farm roads.", "If you're coming back after dark, the farm roads are unlit: drive slowly and keep an eye out for people walking on the verge."],
     "capetown-stellenbosch": ["Weekday peaks: roughly 06:30 to 09:00 and 16:00 to 18:30, when both the R304 and R310/R44 approaches queue.", "University terms (February to November) add student traffic in town on weekday mornings.", "Weekends are easier, apart from summer Saturdays when the wine farms are busy."],
     "ctairport-capetown": ["Weekday peaks on the N2 (roughly 06:00 to 09:00 into town and 15:30 to 18:30 out of town) can turn 20 minutes into an hour.", "For an evening flight, leave extra time: traffic out of town past Hospital Bend builds from mid-afternoon.", "Late at night, stay on the N2 and keep doors locked. Don't follow shortcuts off the highway."],
     "capetown-langebaan": ["Avoid the R27 through Table View at weekday peaks, roughly 06:30 to 08:30 and 16:00 to 18:00.", "The south-easter is strongest on summer afternoons, so mornings are calmer for the crosswind stretches.", "Saturday mornings heading out and Sunday afternoons heading back are busy, and flower season (August to September) brings extra traffic to the West Coast National Park.", "December and Easter: busiest at the start and end of the holidays."],

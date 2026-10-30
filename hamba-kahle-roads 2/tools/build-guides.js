@@ -14,7 +14,7 @@ const template = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const slug = t => t.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const swap = n => { const m = n.match(/^(.*) to (.*)$/); return m ? m[2] + " to " + m[1] : n; };
+const swap = n => { const m = n.match(/^(.*) to (.*)$/); if (!m) return n; const o = m[2] + " to " + m[1]; return o[0].toUpperCase() + o.slice(1); };
 const KINDS = { hazard: "Hazard", safety: "Safety", roadworks: "Roadworks", weather: "Weather", lane: "Lane advice", toll: "Toll", fuel: "Fuel & stops", tip: "Tip" };
 function orient(r, rev) {
   if (!rev) return r;

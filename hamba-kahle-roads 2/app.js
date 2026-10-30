@@ -570,7 +570,9 @@ function findGuide(from, to) {
 
 function swapLegName(name) {
   const m = name.match(/^(.*) to (.*)$/);
-  return m ? m[2] + " to " + m[1] : name;
+  if (!m) return name;
+  const out = m[2] + " to " + m[1];
+  return out[0].toUpperCase() + out.slice(1);
 }
 function orient(route, reversed) {
   if (!reversed) return route;
