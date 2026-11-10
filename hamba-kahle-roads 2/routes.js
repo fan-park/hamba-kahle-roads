@@ -30,17 +30,21 @@ window.HKR_PLACES = {
   tableview:   ["table view", "blouberg", "bloubergstrand", "milnerton", "parklands", "sunningdale", "big bay", "melkbosstrand", "west beach"],
   bloem:       ["bloemfontein", "bloem", "mangaung"],
   polokwane:   ["polokwane", "pietersburg", "mokopane"],
-  kruger:      ["kruger", "kruger park", "kruger national park", "malelane", "malalane", "mbombela", "nelspruit", "komatipoort", "hazyview", "white river", "skukuza", "marloth park", "crocodile bridge"],
+  kruger:      ["kruger", "kruger park", "kruger national park", "malelane", "malalane", "komatipoort", "hazyview", "skukuza", "marloth park", "crocodile bridge"],
   panorama:    ["dullstroom", "graskop", "sabie", "panorama route", "lydenburg", "mashishing", "pilgrim's rest", "pilgrims rest", "blyde river canyon", "god's window"],
   suncity:     ["sun city", "pilanesberg", "rustenburg", "hartbeespoort", "harties"],
   gqeberha:    ["gqeberha", "port elizabeth", "pe", "nelson mandela bay", "kariega", "uitenhage"],
   drakensberg: ["drakensberg", "berg", "champagne valley", "winterton", "bergville", "central berg", "cathedral peak", "royal natal", "underberg"],
   ballito:     ["ballito", "salt rock", "umhlali", "north coast", "kwadukuza", "stanger", "zimbali", "king shaka airport", "king shaka"],
-  southcoast:  ["margate", "south coast", "port edward", "port shepstone", "shelly beach", "scottburgh", "uvongo", "ramsgate", "southbroom", "hibberdene", "umkomaas", "amanzimtoti"],
+  southcoast:  ["margate", "south coast", "port shepstone", "shelly beach", "scottburgh", "uvongo", "ramsgate", "southbroom", "hibberdene", "umkomaas", "amanzimtoti"],
   eastlondon:  ["east london", "el", "buffalo city", "gonubie"],
-  gardenroute: ["garden route", "knysna", "george", "wilderness", "plettenberg bay", "plett", "mossel bay", "sedgefield"],
+  gardenroute: ["garden route", "knysna", "george", "wilderness", "plettenberg bay", "plett", "sedgefield"],
   hermanus:    ["hermanus", "overberg", "kleinmond", "stanford", "gansbaai"],
   durbanville: ["durbanville", "durbanville hills", "durbanville wine valley", "durbanville winelands", "loch lynne", "lochlynne", "loch lynne wine estate", "loch lynne estate", "diemersdal", "meerendal", "nitida", "de grendel", "hillcrest estate", "altydgedacht", "bloemendal", "d'aria"],
+  mbombela:    ["mbombela", "nelspruit", "white river", "kmia", "kruger mpumalanga airport"],
+  portedward:  ["port edward", "wild coast sun", "wild coast casino", "munster", "trafalgar", "palm beach", "leisure bay"],
+  mosselbay:   ["mossel bay", "mosselbaai", "hartenbos", "dana bay", "klein brak", "groot brak", "great brak"],
+  clarens:     ["clarens", "golden gate", "golden gate highlands", "fouriesburg"],
   stellenbosch:["stellenbosch", "stellies", "winelands", "somerset west"],
   langebaan:   ["langebaan", "west coast", "west coast national park", "saldanha", "paternoster", "velddrif", "yzerfontein", "jacobsbaai"],
   dundee:      ["dundee", "glencoe", "dannhauser", "wasbank"],
@@ -66,7 +70,7 @@ window.HKR_PLACE_LABELS = {
   khayelitsha: "Khayelitsha & Mitchells Plain", tableview: "Table View",
   bloem: "Bloemfontein", polokwane: "Polokwane", kruger: "Kruger Park (Malelane)", panorama: "Dullstroom & Graskop", suncity: "Sun City",
   gqeberha: "Gqeberha (Port Elizabeth)", drakensberg: "Drakensberg", ballito: "Ballito", southcoast: "South Coast (Margate)",
-  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", durbanville: "Durbanville Winelands", langebaan: "Langebaan (West Coast)",
+  eastlondon: "East London", gardenroute: "Garden Route (Knysna)", hermanus: "Hermanus", stellenbosch: "Stellenbosch", durbanville: "Durbanville Winelands", mbombela: "Mbombela (Nelspruit)", portedward: "Port Edward", mosselbay: "Mossel Bay", clarens: "Clarens", langebaan: "Langebaan (West Coast)",
   dundee: "Dundee", nqutu: "Nqutu", stlucia: "St Lucia"
 };
 
@@ -921,7 +925,7 @@ window.HKR_ROUTES = [
   ]
 },
 /* 35 */ {
-  id: "joburg-southcoast", a: ["joburg", "pretoria"], b: ["southcoast"],
+  id: "joburg-southcoast", a: ["joburg", "pretoria"], b: ["southcoast", "portedward"],
   title: "Johannesburg to Margate (South Coast)", route: "N3 to Durban, then the N2 south and the R61", distanceKm: 690, driveTime: "7½–8½ hours",
   roads: ["N3", "N2", "R61"], places: ["Heidelberg", "Villiers", "Harrismith", "Van Reenen", "Ladysmith", "Estcourt", "Mooi River", "Pietermaritzburg", "Pinetown", "Amanzimtoti", "Scottburgh", "Hibberdene", "Port Shepstone", "Shelly Beach", "Uvongo", "Margate"],
   summary: "The N3 down to Durban, then south along the coast. One of the busiest holiday drives in December.",
@@ -1082,6 +1086,126 @@ window.HKR_ROUTES = [
       { kind: "safety", title: "Driving back at night", detail: "The farm roads are dark and unlit. Watch for people walking on the verge and for other drivers who've been tasting." }
     ]}
   ]
+},
+/* 40 */ {
+  id: "joburg-mbombela", a: ["joburg", "pretoria"], b: ["mbombela"],
+  title: "Johannesburg to Mbombela (Nelspruit)", route: "N12 to eMalahleni, then the N4 via Middelburg and eNtokozweni", distanceKm: 330, driveTime: "3½–4 hours",
+  roads: ["N12", "N4"], places: ["eMalahleni", "Witbank", "Middelburg", "Belfast", "eMakhazeni", "Machadodorp", "eNtokozweni", "Waterval Boven", "Ngodwana", "Schoemanskloof", "Mbombela", "Nelspruit"],
+  summary: "Highveld freeway to eMalahleni, two toll plazas on the N4, then a choice of two valleys down into the Lowveld.",
+  before: [
+    "Have a card or cash ready for two toll plazas: Middelburg and Machado.",
+    "Expect heavy trucks all the way: this is the main road to Maputo.",
+    "Check the weather around Belfast. Thick mist is common, especially early and late in the day.",
+    "Coming from Pretoria, take the N4 east instead and add the Diamond Hill toll plaza."
+  ],
+  legs: [
+    { name: "Johannesburg to eMalahleni", items: [
+      { kind: "lane", title: "N12 out of Joburg", detail: "Head east on the N12 past the East Rand. It joins the N4 at eMalahleni (Witbank)." },
+      { kind: "hazard", title: "Coal trucks", detail: "Slow, heavy trucks around Ogies and eMalahleni, and the road surface suffers for it. Watch for potholes in the left lane." },
+      { kind: "fuel", title: "eMalahleni and Middelburg", detail: "Plenty of fuel and food at both towns, just off the highway." }
+    ]},
+    { name: "eMalahleni to eNtokozweni", items: [
+      { kind: "toll", title: "Middelburg Toll Plaza", detail: "Mainline plaza just before the first Middelburg off-ramp." },
+      { kind: "fuel", title: "Alzu Petroport", detail: "Big 24-hour stop on both sides of the N4 between Middelburg and Belfast. A good halfway break." },
+      { kind: "weather", title: "Highveld mist around Belfast", detail: "Mist can come down quickly around Belfast (eMakhazeni). Slow down, lights on, and leave a big gap." },
+      { kind: "toll", title: "Machado Toll Plaza", detail: "Mainline plaza near eNtokozweni (Machadodorp)." }
+    ]},
+    { name: "eNtokozweni to Mbombela", items: [
+      { kind: "tip", title: "Two ways down", detail: "After the Machado plaza the N4 splits. Schoemanskloof is usually quicker and quieter; the Elands River valley goes via Waterval Boven and Ngodwana. They meet again near Montrose." },
+      { kind: "hazard", title: "Elands River valley", detail: "Winding road with a tunnel at Waterval Boven, heavy trucks and few safe places to pass or stop. Don't overtake on the bends." },
+      { kind: "safety", title: "Trucks on the descents", detail: "Loaded trucks crawl down in low gear and some lose their brakes. Never sit close behind one on a downhill." },
+      { kind: "lane", title: "Into Mbombela", detail: "Stay on the N4 northern bypass if you're passing through to White River or Kruger. For town, take the R104 exit." }
+    ]}
+  ]
+},
+/* 41 */ {
+  id: "durban-portedward", a: ["durban"], b: ["portedward"],
+  title: "Durban to Port Edward", route: "N2 south to Port Shepstone, then the R61 past Margate", distanceKm: 170, driveTime: "About 2 hours",
+  roads: ["N2", "R61", "R102", "R620"], places: ["Amanzimtoti", "Kingsburgh", "Umkomaas", "Scottburgh", "Hibberdene", "Port Shepstone", "Shelly Beach", "Margate", "Ramsgate", "Southbroom", "Port Edward"],
+  summary: "The whole KZN South Coast: quick N2 to Port Shepstone, then the R61 down to the last town before the Eastern Cape.",
+  before: [
+    "Have a card or cash ready for the South Coast toll road around Port Shepstone.",
+    "Fill up before Southbroom. Fuel is thinner on the last stretch to Port Edward.",
+    "In December, leave early: the road past Amanzimtoti and through the Margate area gets very busy.",
+    "Going on to the Wild Coast Sun? It's just across the Mtamvuna River bridge after Port Edward."
+  ],
+  legs: [
+    { name: "Durban to Scottburgh", items: [
+      { kind: "hazard", title: "Amanzimtoti and Kingsburgh", detail: "The busiest part of the N2 south of Durban. Queues at peak hours and on holiday weekends." },
+      { kind: "tip", title: "R102 alternative", detail: "The old coast road runs alongside the N2. It's slower, with robots and towns, but useful if the N2 is blocked." }
+    ]},
+    { name: "Scottburgh to Port Shepstone", items: [
+      { kind: "hazard", title: "Single-carriageway sections", detail: "The N2 narrows in places south of Scottburgh. Overtake only on the passing lanes." },
+      { kind: "safety", title: "Pedestrians and taxis", detail: "People cross the N2 near Umzinto and Hibberdene, and taxis stop on the shoulder. Take extra care at dusk." },
+      { kind: "toll", title: "South Coast toll road", detail: "Tolled from around Hibberdene to Southbroom, with the Oribi mainline plaza and ramp plazas at Umtentweni and Izotsha (Shelly Beach). What you pay depends on where you leave it." }
+    ]},
+    { name: "Port Shepstone to Port Edward", items: [
+      { kind: "lane", title: "Onto the R61", detail: "At Port Shepstone the N2 turns inland towards Kokstad. Keep left for the R61 down the coast." },
+      { kind: "hazard", title: "Holiday traffic near Margate", detail: "The exits for Shelly Beach, Uvongo, Margate and Ramsgate back up in December and over Easter." },
+      { kind: "fuel", title: "Last big stops", detail: "Shelly Beach and Margate have the last big choice of fuel, shops and ATMs." },
+      { kind: "safety", title: "Southbroom to Port Edward", detail: "Quieter, more rural road with pedestrians, livestock and few streetlights. Best in daylight." },
+      { kind: "tip", title: "The Eastern Cape border", detail: "Port Edward is the last town in KZN. The R61 carries on over the Mtamvuna River towards Bizana and the Wild Coast." }
+    ]}
+  ]
+},
+/* 42 */ {
+  id: "capetown-mosselbay", a: ["capetown"], b: ["mosselbay"],
+  title: "Cape Town to Mossel Bay", route: "N2 via Caledon, Swellendam and Riversdale", distanceKm: 385, driveTime: "4–4½ hours",
+  roads: ["N2"], places: ["Somerset West", "Sir Lowry's Pass", "Grabouw", "Caledon", "Riviersonderend", "Swellendam", "Heidelberg", "Riversdale", "Albertinia", "Mossel Bay", "Hartenbos"],
+  summary: "No tolls and one mountain pass, then long open stretches through the Overberg to the start of the Garden Route.",
+  before: [
+    "No toll plazas between Cape Town and Mossel Bay.",
+    "Leave early to miss N2 traffic through Somerset West.",
+    "Check wind warnings for Sir Lowry's Pass if you're towing.",
+    "Plan a stop at Swellendam or Riversdale: the straight stretches after that are tiring."
+  ],
+  legs: [
+    { name: "Cape Town to Swellendam", items: [
+      { kind: "safety", title: "N2 past the airport", detail: "Stay on the N2, keep doors locked and don't stop on the shoulder." },
+      { kind: "hazard", title: "Somerset West traffic lights", detail: "The N2 runs through a string of robots here. It backs up on Friday afternoons and at the start of holidays." },
+      { kind: "weather", title: "Sir Lowry's Pass", detail: "Strong summer winds and winter mist. Slow down, especially towing." },
+      { kind: "hazard", title: "Houwhoek Pass", detail: "Bends and slow trucks between Grabouw and Botrivier. Use the passing lanes." },
+      { kind: "fuel", title: "Caledon and Swellendam", detail: "Fuel and food on the Overberg stretch." }
+    ]},
+    { name: "Swellendam to Mossel Bay", items: [
+      { kind: "hazard", title: "Long overtaking stretches", detail: "Single carriageway with trucks and caravans. Wait for the passing lanes rather than risking it on a rise." },
+      { kind: "safety", title: "Fatigue", detail: "Long, straight and warm in summer. Swap drivers or stop if you feel drowsy." },
+      { kind: "fuel", title: "Riversdale and Albertinia", detail: "The last fuel and food stops before Mossel Bay." },
+      { kind: "lane", title: "Into Mossel Bay", detail: "The N2 bypasses the town. Take the Mossel Bay exit (R102) for the centre and the Point, or carry on for Hartenbos and George." },
+      { kind: "hazard", title: "December traffic", detail: "Mossel Bay, Hartenbos and the beaches fill up over the summer holidays. Allow extra time for the last few kilometres." }
+    ]}
+  ]
+},
+/* 43 */ {
+  id: "joburg-clarens", a: ["joburg", "pretoria"], b: ["clarens"],
+  title: "Johannesburg to Clarens", route: "N3 to Villiers, then the R26 via Frankfort and Reitz to Bethlehem, and the R712", distanceKm: 320, driveTime: "3½–4 hours",
+  roads: ["N3", "R26", "R712", "N5"], places: ["Heidelberg", "Villiers", "Frankfort", "Tweeling", "Reitz", "Bethlehem", "Clarens", "Golden Gate"],
+  summary: "An easy N3 start, then Free State farm roads to Bethlehem and a short mountain run into Clarens.",
+  before: [
+    "Have a card or cash ready for the De Hoek toll plaza on the N3.",
+    "Fill up before you leave the N3. The towns on the R26 are small and far apart.",
+    "Do the farm roads in daylight: potholes, livestock and no streetlights.",
+    "In winter, check for snow and ice around Clarens and Golden Gate before you go."
+  ],
+  legs: [
+    { name: "Johannesburg to Villiers", items: [
+      { kind: "lane", title: "Joburg end", detail: "Traffic builds around Alberton and Germiston. Clear it before the afternoon peak, especially on a Friday." },
+      { kind: "toll", title: "De Hoek Toll Plaza", detail: "Mainline plaza just past Heidelberg. It's the only toll on this route." },
+      { kind: "lane", title: "Leaving the N3 at Villiers", detail: "Take the Villiers off-ramp for the R26 towards Frankfort." }
+    ]},
+    { name: "Villiers to Bethlehem", items: [
+      { kind: "hazard", title: "Potholes on the R26", detail: "Free State secondary roads are often badly potholed. Slow down, especially after rain when the holes fill with water." },
+      { kind: "safety", title: "Livestock and farm vehicles", detail: "Cattle, sheep and slow tractors on a two-lane road with narrow shoulders." },
+      { kind: "fuel", title: "Frankfort and Reitz", detail: "Small towns with fuel. Don't count on anything in between." },
+      { kind: "lane", title: "Through Bethlehem", detail: "Follow the signs through town for the R712 to Clarens. Bethlehem is the last big town for fuel, shops and ATMs." }
+    ]},
+    { name: "Bethlehem to Clarens", items: [
+      { kind: "hazard", title: "R712 to Clarens", detail: "About 35 km of rolling road with bends near the end. Watch for cyclists and slow traffic on weekends." },
+      { kind: "weather", title: "Snow, ice and storms", detail: "Snow and black ice are possible in winter, and summer afternoons bring heavy thunderstorms." },
+      { kind: "tip", title: "Via Harrismith and Golden Gate", detail: "The scenic alternative: stay on the N3 to Harrismith, then the R712 through Golden Gate. It's longer and adds the Wilge toll plaza." },
+      { kind: "tip", title: "Weekends in Clarens", detail: "The village square fills up on Saturdays and long weekends. Park once and walk." }
+    ]}
+  ]
 }
 ];
 
@@ -1146,6 +1270,9 @@ window.HKR_ROUTE_PATHS = (() => {
     mtubatuba: [-28.42, 32.18], stlucia: [-28.38, 32.41],
     reddersburg: [-29.65, 26.17], smithfield: [-30.21, 26.53], rouxville: [-30.42, 26.83], aliwal: [-30.69, 26.71],
     jamestown: [-31.12, 26.81], komani: [-31.90, 26.88], cathcart: [-32.30, 27.14], stutterheim: [-32.57, 27.42],
+    entokozweni: [-25.67, 30.25], ogies: [-26.05, 29.05], portedward: [-31.05, 30.22], southbroom: [-30.92, 30.32],
+    albertinia: [-34.20, 21.58], heidelbergwc: [-34.09, 20.96], mosselbaytown: [-34.18, 22.13],
+    frankfort: [-27.28, 28.49], reitz: [-27.80, 28.43], clarens: [-28.51, 28.42], goldengate: [-28.51, 28.62],
     senekal: [-28.32, 27.62], paulroux: [-28.30, 27.95], bethlehem: [-28.23, 28.31], kestell: [-28.31, 28.70]
   };
   window.HKR_POINTS = P;
@@ -1180,6 +1307,10 @@ window.HKR_ROUTE_PATHS = (() => {
     "pinetown-dbncbd": { tol: 4, paths: [path("pinetown", "westville", "ebcloete", "mayville", "dbncbd")] },
     "umhlanga-dbncbd": { tol: 4, paths: [path("umhlanga", "virginia", "durbannorth", "mabhida", "dbncbd")] },
     "pmb-durban": { tol: SUBURB, paths: [path("pmb", "camperdown", "catoridge", "hammarsdale", "mariannhill", "pinetown", "westville", "ebcloete", "dbncbd")] },
+    "joburg-mbombela": { tol: LONG, paths: [path("joburg", "benoni", "ogies", "emalahleni", "middelburg", "belfast", "machadodorp", "watervalboven", "ngodwana", "mbombela"), path("pretoria", "bronkhorstspruit", "emalahleni")] },
+    "durban-portedward": { tol: 15, paths: [path("dbncbd", "amanzimtoti", "umkomaas", "scottburgh", "hibberdene", "portshepstone", "margate", "southbroom", "portedward")] },
+    "capetown-mosselbay": { tol: LONG, paths: [path("capetown", "ctairport", "somersetwest", "sirlowrys", "grabouw", "houwhoek", "caledon", "riviersonderend", "swellendam", "heidelbergwc", "riversdale", "albertinia", "mosselbay")] },
+    "joburg-clarens": { tol: LONG, paths: [path("pretoria", "joburg", "heidelberg", "villiers", "frankfort", "reitz", "bethlehem", "clarens"), path("villiers", "harrismith", "goldengate", "clarens")] },
     "capetown-durbanville": { tol: SUBURB, paths: [path("capetown", "paarden", "centurycity", "plattekloof", "tygervalley", "durbanville", "lochlynne"), path("ctairport", "bellville", "tygervalley", "durbanville", "lochlynne")] },
     "bellville-capetown": { tol: 4, paths: [path("bellville", "tygervalley", "plattekloof", "goodwood", "paarden", "capetown")] },
     "southern-capetown": { tol: 4, paths: [path("tokai", "constantia", "wynberg", "newlands", "rondebosch", "hospitalbend", "capetown")] },
@@ -1221,6 +1352,10 @@ window.HKR_ROUTE_PATHS = (() => {
     "capetown-gqeberha": [CT_PEAK, SIRLOWRY, "December: very busy from the weekend schools close (10 to 13 December) to New Year, especially around Knysna and Plettenberg Bay, and heading home in the first half of January.", "It's an 8 to 9 hour drive with passes and long overtaking stretches, so plan to do it all in daylight."],
     "capetown-gardenroute": [CT_PEAK, SIRLOWRY, "Knysna's main road crawls in the December holidays and on long weekends. Allow extra time for the last few kilometres.", "December: busiest heading to the Garden Route from the weekend schools close (10 to 13 December) to Christmas, and back to Cape Town in the first half of January."],
     "capetown-hermanus": [CT_PEAK, "Saturday mornings heading out and Sunday afternoons heading back are the busiest. Hermanus town is busiest in December and during whale season (roughly July to November).", SIRLOWRY],
+    "joburg-mbombela": ["Clear the N12 past the East Rand before 06:00 or after 09:00 to miss peak traffic.", "Friday afternoons and long weekends bring queues at the Middelburg and Machado toll plazas.", "Do the descent after eNtokozweni in daylight: winding roads, heavy trucks and few safe places to stop.", dec("the Lowveld", "Gauteng")],
+    "durban-portedward": ["Weekday peaks around Amanzimtoti on the N2: roughly 06:30 to 08:30 and 15:30 to 18:00.", "Friday afternoons heading south and Sunday afternoons heading back to Durban are the busiest.", "December: very busy from the weekend schools close (10 to 13 December) through New Year, especially around Margate.", "Do the stretch between Southbroom and Port Edward in daylight if you can."],
+    "capetown-mosselbay": [CT_PEAK, SIRLOWRY, "It's a 4 to 4½ hour drive with long single-carriageway stretches, so plan to do it in daylight.", "December: busiest heading to the Garden Route from the weekend schools close (10 to 13 December) to Christmas, and back to Cape Town in the first half of January."],
+    "joburg-clarens": ["Leave Joburg before 14:00 on a Friday, or go on Saturday morning: Friday afternoon traffic on the N3 is heavy.", "Do the R26 farm roads in daylight because of potholes and livestock.", "Winter weekends after snow are very busy, and the roads can be icy early in the morning.", "Sunday afternoons heading back to Gauteng are the busiest, especially at the De Hoek toll plaza."],
     "capetown-durbanville": [CT_PEAK.replace("the N2 between Cape Town and Somerset West", "the N1 between Cape Town and Bellville"), "Saturday mornings are busy around the Tyger Valley shops; mid-morning and early afternoon are quieter on the farm roads.", "If you're coming back after dark, the farm roads are unlit: drive slowly and keep an eye out for people walking on the verge."],
     "capetown-stellenbosch": ["Weekday peaks: roughly 06:30 to 09:00 and 16:00 to 18:30, when both the R304 and R310/R44 approaches queue.", "University terms (February to November) add student traffic in town on weekday mornings.", "Weekends are easier, apart from summer Saturdays when the wine farms are busy."],
     "ctairport-capetown": ["Weekday peaks on the N2 (roughly 06:00 to 09:00 into town and 15:30 to 18:30 out of town) can turn 20 minutes into an hour.", "For an evening flight, leave extra time: traffic out of town past Hospital Bend builds from mid-afternoon.", "Late at night, stay on the N2 and keep doors locked. Don't follow shortcuts off the highway."],
@@ -1233,4 +1368,39 @@ window.HKR_ROUTE_PATHS = (() => {
     "bloem-durban": ["Leave early so the two-lane farm roads to Harrismith, and Van Reenen's Pass, are in daylight.", VANREENEN, "Friday afternoons and long weekends bring queues at the Tugela, Mooi and Mariannhill toll plazas.", dec("the coast", "the Free State and Gauteng")]
   };
   for (const r of window.HKR_ROUTES) if (W[r.id]) r.when = W[r.id];
+})();
+
+/* Toll fees for a normal car (Class 1), from SANRAL's tariff list that took effect on 1 March 2026.
+   Tolls usually go up every March: update FEES and TOTALS then (nra.co.za publishes the new list in February). */
+window.HKR_TOLL_NOTE = "Toll fees are for a normal car (Class 1), from 1 March 2026. They usually go up every March.";
+(function () {
+  const FEES = {
+    "Mariannhill Toll Plaza": 16.5, "Mooi Toll Plaza": 70, "Tugela Toll Plaza": 100, "Wilge Toll Plaza": 94, "De Hoek Toll Plaza": 67,
+    "Grasmere Toll Plaza": 27.5, "Vaal Toll Plaza": 91.5, "Verkeerdevlei Toll Plaza": 78.5, "Huguenot Tunnel": 54.5,
+    "Pumulani Toll Plaza": 16.5, "Carousel Toll Plaza": 75, "Kranskop Toll Plaza": 61.5, "Nyl Toll Plaza": 79.5,
+    "Diamond Hill Toll Plaza": 51, "Middelburg Toll Plaza": 84, "Machado Toll Plaza": 126, "Nkomazi Toll Plaza": 95,
+    "King Shaka ramp toll": 8.5, "oThongathi Toll Plaza": 15.5, "Mvoti Toll Plaza": 18.5, "Mtunzini Toll Plaza": 63.5,
+    "Oribi Toll Plaza": 41, "Tsitsikamma Toll Plaza": 73, "Ladysmith (N11) ramp toll": 62
+  };
+  const TEXT = {
+    "Three N1 toll plazas": "R197.50 for all three",
+    "Ramp tolls near Port Shepstone": "Umtentweni R17.50 · Izotsha R12.50",
+    "South Coast toll road": "Oribi R41.00 · Umtentweni R17.50 · Izotsha R12.50"
+  };
+  /* What a car pays driving the whole guide one way. Left out where it depends on the exit you use. */
+  const TOTALS = {
+    "durban-joburg": 347.5, "joburg-capetown": 252, "joburg-bloem": 197.5, "pretoria-polokwane": 232.5, "pretoria-kruger": 356,
+    "joburg-panorama": 84, "joburg-gqeberha": 197.5, "durban-drakensberg": 86.5, "durban-ballito": 15.5, "durban-eastlondon": 41,
+    "capetown-gqeberha": 73, "pmb-durban": 16.5, "dundee-durban": 148.5, "durban-stlucia": 97.5, "joburg-eastlondon": 197.5,
+    "bloem-durban": 265, "joburg-mbombela": 210, "joburg-clarens": 67
+  };
+  const rand = n => "R" + n.toFixed(2);
+  for (const r of window.HKR_ROUTES) {
+    for (const l of r.legs) for (const it of l.items) {
+      if (it.kind !== "toll") continue;
+      if (FEES[it.title] != null) it.fee = rand(FEES[it.title]);
+      else if (TEXT[it.title]) it.fee = TEXT[it.title];
+    }
+    if (TOTALS[r.id] != null) r.tollTotal = rand(TOTALS[r.id]);
+  }
 })();

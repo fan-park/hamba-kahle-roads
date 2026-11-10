@@ -21,11 +21,11 @@ function orient(r, rev) {
   return { ...r, title: swap(r.title), reverseNote: "This guide was written for " + r.title + ". The same roads apply on your trip, but read exits, merges and lane tips the other way round.",
     legs: r.legs.slice().reverse().map(l => ({ name: swap(l.name), items: l.items.slice().reverse() })) };
 }
-const item = it => `<div class="item k-${esc(it.kind)}"><div class="item-top"><span class="item-title">${esc(it.title)}</span><span class="pill">${esc(KINDS[it.kind] || "Note")}</span><span class="src src-general">Road know-how</span></div>${it.detail ? `<p>${esc(it.detail)}</p>` : ""}</div>`;
+const item = it => `<div class="item k-${esc(it.kind)}"><div class="item-top"><span class="item-title">${esc(it.title)}</span><span class="pill">${esc(KINDS[it.kind] || "Note")}</span>${it.fee ? `<span class="pill fee">${esc(it.fee)}</span>` : ""}<span class="src src-general">Road know-how</span></div>${it.detail ? `<p>${esc(it.detail)}</p>` : ""}</div>`;
 function guideHtml(g) {
   return `
     <div class="brief-head"><div style="display:grid;gap:6px;min-width:0"><div class="eyebrow">Route guide</div><h2>${esc(g.title)}</h2>
-      <div class="facts">${g.route ? `<span>Route <b>${esc(g.route)}</b></span>` : ""}${g.distanceKm ? `<span>About <b>${Math.round(g.distanceKm).toLocaleString("en-ZA")} km</b></span>` : ""}${g.driveTime ? `<span>Drive <b>${esc(g.driveTime)}</b></span>` : ""}</div></div></div>
+      <div class="facts">${g.route ? `<span>Route <b>${esc(g.route)}</b></span>` : ""}${g.distanceKm ? `<span>About <b>${Math.round(g.distanceKm).toLocaleString("en-ZA")} km</b></span>` : ""}${g.driveTime ? `<span>Drive <b>${esc(g.driveTime)}</b></span>` : ""}${g.tollTotal ? `<span>Tolls <b>${esc(g.tollTotal)}</b> one way</span>` : ""}</div></div></div>
     ${g.summary ? `<p style="margin:0;max-width:70ch">${esc(g.summary)}</p>` : ""}
     ${g.reverseNote ? `<p class="note reverse-note">${esc(g.reverseNote)}</p>` : ""}
     ${g.when && g.when.length ? `<div class="when"><h3>When to drive</h3><ul>${g.when.map(w => `<li>${esc(w)}</li>`).join("")}</ul><p class="note">Typical patterns, not guarantees. Check official sources before you go.</p></div>` : ""}
@@ -36,10 +36,10 @@ function guideHtml(g) {
 function pageTitle(g, r) {
   const roads = r.roads.slice(0, 2).join("/");
   return r.commute ? `${g.title} commute guide: ${roads} traffic, lanes and hazards | Hamba Kahle Roads`
-    : `${g.title} road trip guide: ${roads} tolls, hazards and stops | Hamba Kahle Roads`;
+    : `${g.title} road trip guide: ${roads} ${g.tollTotal ? "toll fees" : "tolls"}, hazards and stops | Hamba Kahle Roads`;
 }
 function pageDesc(g) {
-  const d = `${g.title}: ${g.summary} About ${g.distanceKm} km, ${g.driveTime}. Tolls, risky stretches, best lanes, fuel stops and recent driver reports.`;
+  const d = `${g.title}: ${g.summary} About ${g.distanceKm} km, ${g.driveTime}${g.tollTotal ? `, ${g.tollTotal} in tolls for a car (2026)` : ""}. Tolls, risky stretches, best lanes, fuel stops and recent driver reports.`;
   return d.length > 300 ? d.slice(0, 297) + "…" : d;
 }
 

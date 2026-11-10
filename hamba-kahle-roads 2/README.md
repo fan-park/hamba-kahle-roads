@@ -2,14 +2,14 @@
 
 *Hamba kahle* means "go well". Drivers type their trip ("Durban to Joburg") and get a route guide of what to look out for, plus live reports from other drivers. They can report potholes and hazards with one tap.
 
-This version runs **free**: 39 route guides (27 trips and 12 daily commutes) are written into the site, so no AI service is needed.
+This version runs **free**: 43 route guides (31 trips and 12 daily commutes) are written into the site, so no AI service is needed.
 
 ## What's in this folder
 
 | File | What it does |
 |---|---|
 | `index.html`, `styles.css`, `app.js` | The website itself |
-| `routes.js` | The 39 route guides. Edit this file to change or add guides |
+| `routes.js` | The 43 route guides. Edit this file to change or add guides |
 | `config.js` | Where you paste your database address and public key |
 | `supabase/schema.sql` | Creates the database tables and security rules |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Let people add the site to their phone's home screen like an app |
@@ -76,6 +76,7 @@ Open `routes.js`. Each guide has:
 - `roads` and `places`: used to pull matching driver reports into the guide.
 - `before`: the "Before you leave" checklist.
 - "When to drive" tips for long-distance guides live at the bottom of `routes.js`. The December dates are for one holiday season, so update them every year (around October, once the school calendar is out).
+- Toll fees are also at the bottom of `routes.js` (`FEES` and `TOTALS`). They change every March: SANRAL publishes the new list at nra.co.za in February.
 - `legs`: sections of the trip, each named "Town to Town", with items. Each item has a `kind` (`hazard`, `safety`, `roadworks`, `weather`, `lane`, `toll`, `fuel` or `tip`), a short `title` and a one-line `detail`.
 
 Write each guide in one direction only; the site reverses it automatically for the return trip. Word items so they make sense both ways ("steep pass between X and Y" rather than "climb into Y").

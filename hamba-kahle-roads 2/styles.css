@@ -323,3 +323,5 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
 .leg.passed { opacity: .55; }
 .leg.passed .items { display: none; }
 .behind { font-size: 12px; font-weight: 600; color: var(--muted); margin-left: 6px; }
+
+.pill.fee { background: var(--marking); color: var(--marking-ink); font-family: var(--mono); font-weight: 600; }

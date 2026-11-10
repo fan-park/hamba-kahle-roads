@@ -845,7 +845,7 @@ async function copyText(text, btn) {
 function itemHtml(it, src) {
   return `<div class="item k-${esc(it.kind)}">
     <div class="item-top"><span class="item-title">${esc(it.title)}</span>
-      <span class="pill">${esc(KINDS[it.kind] || "Note")}</span>
+      <span class="pill">${esc(KINDS[it.kind] || "Note")}</span>${it.fee ? `<span class="pill fee">${esc(it.fee)}</span>` : ""}
       <span class="src ${src === "drivers" ? "src-drivers" : "src-general"}">${src === "drivers" ? "Drivers" : "Road know-how"}</span></div>
     ${it.detail ? `<p>${esc(it.detail)}</p>` : ""}
   </div>`;
@@ -897,6 +897,7 @@ function renderGuide(g, original) {
           ${g.route ? `<span>Route <b>${esc(g.route)}</b></span>` : ""}
           ${g.distanceKm ? `<span>About <b>${esc(Math.round(g.distanceKm).toLocaleString("en-ZA"))} km</b></span>` : ""}
           ${g.driveTime ? `<span>Drive <b>${esc(g.driveTime)}</b></span>` : ""}
+          ${g.tollTotal ? `<span>Tolls <b>${esc(g.tollTotal)}</b> one way</span>` : ""}
           <span id="g-live-count">${guideCountText(live)}</span>
         </div>
       </div>
@@ -922,7 +923,7 @@ function renderGuide(g, original) {
         ${g.legs.map(l => `<div class="leg${l.passed ? " passed" : ""}"><h3>${esc(l.name)}${l.here ? ` <span class="here-pill">You're here</span>` : ""}${l.passed ? ` <span class="behind">behind you</span>` : ""}</h3><div class="items">${l.items.map(it => itemHtml(it, "general")).join("")}</div></div>`).join("")}
       </div>
     </div>
-    <p class="note">"Road know-how" is general guidance and isn't live. Check the official sources for closures before you leave.</p>
+    <p class="note">"Road know-how" is general guidance and isn't live. Check the official sources for closures before you leave.${g.legs.some(l => l.items.some(it => it.fee)) && window.HKR_TOLL_NOTE ? " " + esc(window.HKR_TOLL_NOTE) : ""}</p>
     ${CFG.WHATSAPP_CHANNEL ? `<div class="wa-cta"><span><b>Get weekly road updates on WhatsApp.</b> Roadworks, closures and fuel prices every Thursday, free.</span><a class="btn wa" href="${esc(CFG.WHATSAPP_CHANNEL)}" target="_blank" rel="noopener">Follow Road Watch</a></div>` : ""}`;
   briefBody.querySelectorAll("[data-road]").forEach(b => b.onclick = () => {
     $("q").value = b.dataset.road; state.q = b.dataset.road; render();
